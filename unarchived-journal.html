@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>unarchived journal</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg:#0e0e0e;--bg2:#161616;--bg3:#1c1c1c;--bg4:#222;
+  --tx:#c8c8c8;--tx2:#888;--tx3:#555;
+  --gd:#c9a96e;--gd2:#a8884d;--gd-dim:rgba(201,169,110,.15);
+  --tl:#5a9e8f;--rd:#c06060;--bl:#6a9fd8;--mg:#b07acc;--yw:#d4c45a;
+  --cursor:#c9a96e;
+  --brd:rgba(255,255,255,.06);
+  --mono:'JetBrains Mono',monospace;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --radius:6px;
+}
+
+.light{
+  --bg:#f5f2ed;--bg2:#ebe7e0;--bg3:#e0dcd5;--bg4:#d5d1ca;
+  --tx:#1a1a1a;--tx2:#666;--tx3:#999;
+  --cursor:#a8884d;
+  --brd:rgba(0,0,0,.08);
+}
+
+html{font-size:16px}
+body{
+  font-family:var(--mono);
+  background:var(--bg);
+  color:var(--tx);
+  min-height:100vh;
+  transition:background .3s,color .3s;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ─── CHROME ─── */
+.chrome{
+  position:fixed;top:0;left:0;right:0;
+  height:44px;
+  background:var(--bg2);
+  border-bottom:1px solid var(--brd);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;
+  z-index:100;
+  backdrop-filter:blur(10px);
+}
+.chrome-left{display:flex;align-items:center;gap:16px}
+.chrome-title{
+  font-family:var(--serif);font-size:1.1rem;font-weight:400;
+  color:var(--tx2);letter-spacing:.02em;
+}
+.chrome-title em{font-weight:400;color:var(--tx3)}
+.chrome-right{display:flex;align-items:center;gap:8px}
+
+.btn{
+  background:transparent;border:1px solid var(--brd);
+  color:var(--tx2);font-family:var(--mono);font-size:.7rem;
+  padding:5px 12px;border-radius:var(--radius);cursor:pointer;
+  transition:all .2s;letter-spacing:.03em;
+}
+.btn:hover{border-color:var(--gd);color:var(--gd)}
+.btn.active{border-color:var(--gd);color:var(--gd);background:var(--gd-dim)}
+.btn-icon{padding:5px 8px;font-size:.85rem;line-height:1}
+
+/* ─── SIDEBAR ─── */
+.sidebar{
+  position:fixed;left:0;top:44px;bottom:0;
+  width:240px;background:var(--bg2);
+  border-right:1px solid var(--brd);
+  overflow-y:auto;z-index:90;
+  transition:transform .3s;
+}
+.sidebar.hidden{transform:translateX(-240px)}
+.sidebar-header{
+  padding:16px 16px 8px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.sidebar-header h3{
+  font-size:.65rem;font-weight:600;color:var(--tx3);
+  letter-spacing:.1em;text-transform:uppercase;
+}
+.new-entry-btn{
+  background:var(--gd-dim);border:1px solid rgba(201,169,110,.2);
+  color:var(--gd);font-family:var(--mono);font-size:.75rem;
+  padding:4px 10px;border-radius:var(--radius);cursor:pointer;
+  transition:all .2s;
+}
+.new-entry-btn:hover{background:rgba(201,169,110,.25)}
+
+.entry-list{padding:4px 8px}
+.entry-item{
+  padding:10px 12px;border-radius:var(--radius);cursor:pointer;
+  margin-bottom:2px;transition:background .15s;
+}
+.entry-item:hover{background:var(--bg3)}
+.entry-item.active{background:var(--bg3);border-left:2px solid var(--gd);padding-left:10px}
+.entry-item .entry-date{font-size:.65rem;color:var(--tx3);margin-bottom:2px}
+.entry-item .entry-preview{font-size:.75rem;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ─── TIMER ─── */
+.timer-bar{
+  position:fixed;top:44px;right:0;left:240px;
+  height:36px;background:var(--bg3);
+  border-bottom:1px solid var(--brd);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+  z-index:80;
+  transition:left .3s,opacity .3s,height .3s;
+}
+.timer-bar.collapsed{height:0;opacity:0;overflow:hidden;padding:0 24px}
+.sidebar.hidden ~ .timer-bar{left:0}
+.timer-display{
+  font-family:var(--mono);font-size:.85rem;font-weight:500;
+  color:var(--gd);letter-spacing:.05em;
+  min-width:80px;
+}
+.timer-controls{display:flex;align-items:center;gap:6px}
+.timer-input{
+  background:transparent;border:1px solid var(--brd);
+  color:var(--tx);font-family:var(--mono);font-size:.7rem;
+  padding:3px 8px;border-radius:var(--radius);width:50px;
+  text-align:center;
+}
+.timer-input:focus{outline:none;border-color:var(--gd)}
+.timer-label{font-size:.65rem;color:var(--tx3)}
+.timer-pulse{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--gd);margin-right:8px;
+  animation:pulse 1.5s ease-in-out infinite;
+}
+.timer-pulse.paused{animation:none;opacity:.3}
+.timer-pulse.stopped{display:none}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* ─── EDITOR ─── */
+.editor-wrap{
+  margin-left:240px;margin-top:80px;
+  min-height:calc(100vh - 80px);
+  padding:40px 48px 120px;
+  transition:margin-left .3s;
+}
+.sidebar.hidden ~ .editor-wrap{margin-left:0}
+.timer-bar.collapsed ~ .editor-wrap{margin-top:44px}
+
+.editor-meta{
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:24px;padding-bottom:16px;
+  border-bottom:1px solid var(--brd);
+}
+.editor-meta-date{font-size:.75rem;color:var(--tx3)}
+.editor-meta-words{font-size:.7rem;color:var(--tx3);margin-left:auto}
+.editor-meta-session{font-size:.7rem;color:var(--gd);font-style:italic}
+
+.prompt-line{
+  display:flex;align-items:flex-start;gap:0;
+  margin-bottom:4px;
+}
+.prompt-symbol{
+  color:var(--gd);font-weight:600;font-size:.9rem;
+  min-width:20px;line-height:1.8;user-select:none;
+  flex-shrink:0;
+}
+
+.editor{
+  flex:1;
+  font-family:var(--mono);font-size:.9rem;
+  color:var(--tx);line-height:1.8;
+  background:transparent;border:none;outline:none;
+  resize:none;width:100%;
+  min-height:calc(100vh - 250px);
+  caret-color:var(--cursor);
+  overflow:hidden;
+}
+.editor::placeholder{color:var(--tx3)}
+.editor::selection{background:var(--gd-dim);color:var(--tx)}
+
+/* ─── HIGHLIGHTS ─── */
+.highlight-bar{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:var(--bg2);border:1px solid var(--brd);
+  border-radius:var(--radius);padding:6px 10px;
+  display:flex;align-items:center;gap:6px;
+  z-index:100;
+  opacity:0;pointer-events:none;
+  transition:opacity .2s;
+}
+.highlight-bar.visible{opacity:1;pointer-events:auto}
+.hl-btn{
+  width:22px;height:22px;border-radius:4px;
+  border:1px solid var(--brd);cursor:pointer;
+  transition:all .15s;display:flex;align-items:center;justify-content:center;
+  font-size:.6rem;color:var(--tx3);
+}
+.hl-btn:hover{border-color:var(--tx2);transform:scale(1.1)}
+.hl-btn.hl-gold{background:rgba(201,169,110,.2);border-color:rgba(201,169,110,.3)}
+.hl-btn.hl-teal{background:rgba(90,158,143,.2);border-color:rgba(90,158,143,.3)}
+.hl-btn.hl-red{background:rgba(192,96,96,.2);border-color:rgba(192,96,96,.3)}
+.hl-btn.hl-blue{background:rgba(106,159,216,.2);border-color:rgba(106,159,216,.3)}
+.hl-btn.hl-purple{background:rgba(176,122,204,.2);border-color:rgba(176,122,204,.3)}
+.hl-btn.hl-yellow{background:rgba(212,196,90,.2);border-color:rgba(212,196,90,.3)}
+.hl-btn.hl-clear{background:transparent}
+
+.hl-modes{display:flex;gap:3px}
+.hl-mode{
+  width:26px;height:22px;border-radius:4px;
+  border:1px solid var(--brd);cursor:pointer;
+  background:transparent;color:var(--tx3);
+  font-family:var(--mono);font-size:.65rem;font-weight:600;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.hl-mode:hover{border-color:var(--tx2);color:var(--tx2)}
+.hl-mode.active{border-color:var(--gd);color:var(--gd);background:var(--gd-dim)}
+.hl-sep{width:1px;height:16px;background:var(--brd);margin:0 4px}
+
+/* Highlight rendering — text mode */
+mark[data-mode="text"][data-color="gold"]{background:transparent;color:var(--gd)}
+mark[data-mode="text"][data-color="teal"]{background:transparent;color:var(--tl)}
+mark[data-mode="text"][data-color="red"]{background:transparent;color:var(--rd)}
+mark[data-mode="text"][data-color="blue"]{background:transparent;color:var(--bl)}
+mark[data-mode="text"][data-color="purple"]{background:transparent;color:var(--mg)}
+mark[data-mode="text"][data-color="yellow"]{background:transparent;color:var(--yw)}
+
+/* Highlight rendering — bg mode */
+mark[data-mode="bg"][data-color="gold"]{background:rgba(201,169,110,.2);color:inherit;border-radius:2px;padding:0 2px}
+mark[data-mode="bg"][data-color="teal"]{background:rgba(90,158,143,.2);color:inherit;border-radius:2px;padding:0 2px}
+mark[data-mode="bg"][data-color="red"]{background:rgba(192,96,96,.2);color:inherit;border-radius:2px;padding:0 2px}
+mark[data-mode="bg"][data-color="blue"]{background:rgba(106,159,216,.2);color:inherit;border-radius:2px;padding:0 2px}
+mark[data-mode="bg"][data-color="purple"]{background:rgba(176,122,204,.2);color:inherit;border-radius:2px;padding:0 2px}
+mark[data-mode="bg"][data-color="yellow"]{background:rgba(212,196,90,.2);color:inherit;border-radius:2px;padding:0 2px}
+
+/* Highlight rendering — both mode */
+mark[data-mode="both"][data-color="gold"]{background:rgba(201,169,110,.2);color:var(--gd);border-radius:2px;padding:0 2px}
+mark[data-mode="both"][data-color="teal"]{background:rgba(90,158,143,.2);color:var(--tl);border-radius:2px;padding:0 2px}
+mark[data-mode="both"][data-color="red"]{background:rgba(192,96,96,.2);color:var(--rd);border-radius:2px;padding:0 2px}
+mark[data-mode="both"][data-color="blue"]{background:rgba(106,159,216,.2);color:var(--bl);border-radius:2px;padding:0 2px}
+mark[data-mode="both"][data-color="purple"]{background:rgba(176,122,204,.2);color:var(--mg);border-radius:2px;padding:0 2px}
+mark[data-mode="both"][data-color="yellow"]{background:rgba(212,196,90,.2);color:var(--yw);border-radius:2px;padding:0 2px}
+
+/* Legacy marks without data-mode (backwards compat) */
+mark[data-color="gold"]:not([data-mode]){background:rgba(201,169,110,.2);color:var(--gd);border-radius:2px;padding:0 2px}
+mark[data-color="teal"]:not([data-mode]){background:rgba(90,158,143,.2);color:var(--tl);border-radius:2px;padding:0 2px}
+mark[data-color="red"]:not([data-mode]){background:rgba(192,96,96,.2);color:var(--rd);border-radius:2px;padding:0 2px}
+mark[data-color="blue"]:not([data-mode]){background:rgba(106,159,216,.2);color:var(--bl);border-radius:2px;padding:0 2px}
+mark[data-color="purple"]:not([data-mode]){background:rgba(176,122,204,.2);color:var(--mg);border-radius:2px;padding:0 2px}
+mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:var(--yw);border-radius:2px;padding:0 2px}
+
+/* ─── EXPORT OVERLAY ─── */
+.export-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  display:none;align-items:center;justify-content:center;z-index:200;
+}
+.export-overlay.visible{display:flex}
+.export-box{
+  background:var(--bg2);border:1px solid var(--brd);
+  border-radius:10px;padding:32px;max-width:400px;width:90%;
+}
+.export-box h2{font-family:var(--serif);font-size:1.3rem;color:var(--tx);margin-bottom:16px;font-weight:400}
+.export-box p{font-size:.8rem;color:var(--tx2);margin-bottom:20px;line-height:1.6}
+.export-actions{display:flex;gap:8px}
+.export-btn{
+  flex:1;padding:10px;border-radius:var(--radius);
+  font-family:var(--mono);font-size:.75rem;cursor:pointer;
+  border:1px solid var(--brd);background:transparent;color:var(--tx2);
+  transition:all .2s;
+}
+.export-btn:hover{border-color:var(--gd);color:var(--gd)}
+.export-btn.primary{background:var(--gd-dim);border-color:rgba(201,169,110,.3);color:var(--gd)}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--brd);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--tx3)}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  .sidebar{width:200px}
+  .sidebar.hidden ~ .editor-wrap{margin-left:0}
+  .editor-wrap{margin-left:200px;padding:24px 20px 100px}
+  .timer-bar{left:200px}
+  .sidebar.hidden ~ .timer-bar{left:0}
+}
+@media(max-width:500px){
+  .sidebar{width:100%;z-index:95}
+  .editor-wrap{margin-left:0;padding:20px 16px 100px}
+  .timer-bar{left:0}
+}
+
+/* ─── PRINT ─── */
+@media print{
+  .chrome,.sidebar,.timer-bar,.highlight-bar,.export-overlay{display:none!important}
+  .editor-wrap{margin:0!important;padding:40px!important}
+  body{background:#fff!important;color:#111!important}
+  mark[data-color="gold"]{background:rgba(201,169,110,.15)!important;color:#8a7040!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  mark[data-color="teal"]{background:rgba(90,158,143,.15)!important;color:#3a7a6a!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  mark[data-color="red"]{background:rgba(192,96,96,.15)!important;color:#804040!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  mark[data-color="blue"]{background:rgba(106,159,216,.15)!important;color:#4070a0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  mark[data-color="purple"]{background:rgba(176,122,204,.15)!important;color:#705090!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  mark[data-color="yellow"]{background:rgba(212,196,90,.15)!important;color:#807030!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  mark[data-mode="text"]{background:transparent!important}
+  mark[data-mode="bg"]{color:inherit!important}
+}
+</style>
+</head>
+<body>
+
+<!-- CHROME -->
+<div class="chrome">
+  <div class="chrome-left">
+    <button class="btn btn-icon" id="toggleSidebar" title="Toggle sidebar">☰</button>
+    <span class="chrome-title"><em>un</em>archived journal</span>
+  </div>
+  <div class="chrome-right">
+    <button class="btn" id="toggleTimer">timer</button>
+    <button class="btn" id="toggleTheme">◐</button>
+    <button class="btn" id="exportBtn">export</button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h3>Entries</h3>
+    <button class="new-entry-btn" id="newEntry">+ new</button>
+  </div>
+  <div class="entry-list" id="entryList"></div>
+</div>
+
+<!-- TIMER -->
+<div class="timer-bar collapsed" id="timerBar">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="timer-pulse stopped" id="timerPulse"></div>
+    <span class="timer-display" id="timerDisplay">00:00</span>
+    <span class="timer-label" id="timerMode">stopwatch</span>
+  </div>
+  <div class="timer-controls">
+    <span class="timer-label">set min:</span>
+    <input type="number" class="timer-input" id="timerMinutes" value="" placeholder="—" min="1" max="999">
+    <button class="btn" id="timerStart">start</button>
+    <button class="btn" id="timerPause" style="display:none">pause</button>
+    <button class="btn" id="timerReset">reset</button>
+  </div>
+</div>
+
+<!-- EDITOR -->
+<div class="editor-wrap" id="editorWrap">
+  <div class="editor-meta">
+    <span class="editor-meta-date" id="metaDate"></span>
+    <span class="editor-meta-session" id="metaSession"></span>
+    <span class="editor-meta-words" id="metaWords">0 words</span>
+  </div>
+  <div class="prompt-line">
+    <span class="prompt-symbol">›</span>
+    <div class="editor" id="editor" contenteditable="true" spellcheck="true" data-placeholder="start writing..."></div>
+  </div>
+</div>
+
+<!-- HIGHLIGHT BAR -->
+<div class="highlight-bar" id="highlightBar">
+  <div class="hl-modes">
+    <button class="hl-mode active" id="hlModeText" title="Text colour">A</button>
+    <button class="hl-mode" id="hlModeBg" title="Background highlight">▬</button>
+  </div>
+  <div class="hl-sep"></div>
+  <button class="hl-btn hl-gold" data-color="gold" title="Gold"></button>
+  <button class="hl-btn hl-teal" data-color="teal" title="Teal"></button>
+  <button class="hl-btn hl-red" data-color="red" title="Red"></button>
+  <button class="hl-btn hl-blue" data-color="blue" title="Blue"></button>
+  <button class="hl-btn hl-purple" data-color="purple" title="Purple"></button>
+  <button class="hl-btn hl-yellow" data-color="yellow" title="Yellow"></button>
+  <div class="hl-sep"></div>
+  <button class="hl-btn hl-clear" data-color="clear" title="Clear">✕</button>
+</div>
+
+<!-- EXPORT OVERLAY -->
+<div class="export-overlay" id="exportOverlay">
+  <div class="export-box">
+    <h2>Export Entry</h2>
+    <p>Save this entry as a PDF, HTML, or Markdown file. Everything stays local — nothing leaves your machine.</p>
+    <div class="export-actions">
+      <button class="export-btn primary" id="exportPdf">Print / Save as PDF</button>
+      <button class="export-btn" id="exportMd">Download .md</button>
+      <button class="export-btn" id="exportHtml">Download HTML</button>
+      <button class="export-btn" id="exportClose">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ───
+let entries = JSON.parse(localStorage.getItem('uj-entries') || '[]');
+let currentId = null;
+let timerInterval = null;
+let timerSeconds = 0;
+let timerTarget = 0; // 0 = stopwatch mode
+let timerRunning = false;
+let timerPaused = false;
+let autoSaveTimeout = null;
+
+const $ = id => document.getElementById(id);
+const editor = $('editor');
+const entryList = $('entryList');
+
+// ─── PLACEHOLDER ───
+function updatePlaceholder() {
+  if (!editor.textContent.trim() && !editor.querySelector('mark')) {
+    editor.setAttribute('data-empty', 'true');
+  } else {
+    editor.removeAttribute('data-empty');
+  }
+}
+// CSS for placeholder
+const phStyle = document.createElement('style');
+phStyle.textContent = `.editor[data-empty="true"]:before{content:attr(data-placeholder);color:var(--tx3);pointer-events:none;position:absolute}`;
+document.head.appendChild(phStyle);
+
+// ─── ENTRIES ───
+function save() {
+  if (!currentId) return;
+  const entry = entries.find(e => e.id === currentId);
+  if (entry) {
+    entry.html = editor.innerHTML;
+    entry.text = editor.textContent;
+    entry.updated = Date.now();
+    localStorage.setItem('uj-entries', JSON.stringify(entries));
+    renderList();
+    updateMeta();
+  }
+}
+
+function autoSave() {
+  clearTimeout(autoSaveTimeout);
+  autoSaveTimeout = setTimeout(save, 800);
+}
+
+function createEntry() {
+  const entry = {
+    id: 'e-' + Date.now(),
+    created: Date.now(),
+    updated: Date.now(),
+    html: '',
+    text: '',
+    timerUsed: false,
+    timerDuration: 0,
+  };
+  entries.unshift(entry);
+  localStorage.setItem('uj-entries', JSON.stringify(entries));
+  loadEntry(entry.id);
+  renderList();
+}
+
+function loadEntry(id) {
+  currentId = id;
+  const entry = entries.find(e => e.id === id);
+  if (entry) {
+    editor.innerHTML = entry.html || '';
+    updatePlaceholder();
+    updateMeta();
+    renderList();
+    editor.focus();
+  }
+}
+
+function deleteEntry(id) {
+  entries = entries.filter(e => e.id !== id);
+  localStorage.setItem('uj-entries', JSON.stringify(entries));
+  if (currentId === id) {
+    if (entries.length) loadEntry(entries[0].id);
+    else { currentId = null; editor.innerHTML = ''; }
+  }
+  renderList();
+}
+
+function renderList() {
+  entryList.innerHTML = '';
+  entries.forEach(entry => {
+    const div = document.createElement('div');
+    div.className = 'entry-item' + (entry.id === currentId ? ' active' : '');
+    const d = new Date(entry.created);
+    const dateStr = d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+    const timeStr = d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+    const preview = (entry.text || '').substring(0, 50) || 'empty entry';
+    div.innerHTML = `
+      <div class="entry-date">${dateStr} · ${timeStr}${entry.timerUsed ? ' · ⏱' : ''}</div>
+      <div class="entry-preview">${preview}</div>
+    `;
+    div.addEventListener('click', () => loadEntry(entry.id));
+    div.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      if (confirm('Delete this entry?')) deleteEntry(entry.id);
+    });
+    entryList.appendChild(div);
+  });
+}
+
+function updateMeta() {
+  const entry = entries.find(e => e.id === currentId);
+  if (!entry) return;
+  const d = new Date(entry.created);
+  $('metaDate').textContent = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) +
+    ' · ' + d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+  const words = (entry.text || '').trim().split(/\s+/).filter(Boolean).length;
+  $('metaWords').textContent = words + ' word' + (words !== 1 ? 's' : '');
+  if (entry.timerUsed && entry.timerDuration > 0) {
+    const m = Math.floor(entry.timerDuration / 60);
+    const s = entry.timerDuration % 60;
+    $('metaSession').textContent = `session: ${m}m ${s}s`;
+  } else {
+    $('metaSession').textContent = '';
+  }
+}
+
+function countWords() {
+  const text = editor.textContent || '';
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  $('metaWords').textContent = words + ' word' + (words !== 1 ? 's' : '');
+}
+
+// ─── EDITOR EVENTS ───
+editor.addEventListener('input', () => {
+  updatePlaceholder();
+  countWords();
+  autoSave();
+});
+
+// ─── HIGHLIGHTS ───
+let hlTextActive = true;
+let hlBgActive = false;
+
+function getHlMode() {
+  if (hlTextActive && hlBgActive) return 'both';
+  if (hlBgActive) return 'bg';
+  return 'text';
+}
+
+$('hlModeText').addEventListener('click', () => {
+  hlTextActive = !hlTextActive;
+  if (!hlTextActive && !hlBgActive) hlBgActive = true; // at least one must be active
+  $('hlModeText').classList.toggle('active', hlTextActive);
+  $('hlModeBg').classList.toggle('active', hlBgActive);
+});
+
+$('hlModeBg').addEventListener('click', () => {
+  hlBgActive = !hlBgActive;
+  if (!hlTextActive && !hlBgActive) hlTextActive = true; // at least one must be active
+  $('hlModeText').classList.toggle('active', hlTextActive);
+  $('hlModeBg').classList.toggle('active', hlBgActive);
+});
+
+function checkSelection() {
+  const sel = window.getSelection();
+  if (sel && sel.toString().trim().length > 0 && editor.contains(sel.anchorNode)) {
+    $('highlightBar').classList.add('visible');
+  } else {
+    $('highlightBar').classList.remove('visible');
+  }
+}
+
+document.addEventListener('selectionchange', checkSelection);
+
+document.querySelectorAll('.hl-btn').forEach(btn => {
+  btn.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    const color = btn.dataset.color;
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+    const range = sel.getRangeAt(0);
+    if (color === 'clear') {
+      // Remove highlights in selection
+      const contents = range.cloneContents();
+      const marks = contents.querySelectorAll('mark');
+      if (marks.length === 0) {
+        const parentMark = sel.anchorNode.parentElement.closest('mark');
+        if (parentMark) {
+          const text = document.createTextNode(parentMark.textContent);
+          parentMark.replaceWith(text);
+          autoSave();
+        }
+      } else {
+        range.deleteContents();
+        const frag = document.createDocumentFragment();
+        contents.childNodes.forEach(n => {
+          if (n.nodeName === 'MARK') {
+            frag.appendChild(document.createTextNode(n.textContent));
+          } else {
+            frag.appendChild(n.cloneNode(true));
+          }
+        });
+        range.insertNode(frag);
+        autoSave();
+      }
+    } else {
+      const mode = getHlMode();
+      const mark = document.createElement('mark');
+      mark.dataset.color = color;
+      mark.dataset.mode = mode;
+      try {
+        range.surroundContents(mark);
+      } catch(err) {
+        const text = sel.toString();
+        range.deleteContents();
+        mark.textContent = text;
+        range.insertNode(mark);
+      }
+      sel.removeAllRanges();
+      autoSave();
+    }
+    $('highlightBar').classList.remove('visible');
+  });
+});
+
+// ─── TIMER ───
+function formatTime(secs) {
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+
+function updateTimerDisplay() {
+  if (timerTarget > 0) {
+    const remaining = Math.max(0, timerTarget - timerSeconds);
+    $('timerDisplay').textContent = formatTime(remaining);
+    $('timerMode').textContent = 'countdown';
+    if (remaining <= 0 && timerRunning) {
+      stopTimer();
+      $('timerDisplay').style.color = 'var(--rd)';
+      $('timerMode').textContent = 'time\'s up';
+      // Record session
+      const entry = entries.find(e => e.id === currentId);
+      if (entry) { entry.timerUsed = true; entry.timerDuration = timerSeconds; save(); }
+    }
+  } else {
+    $('timerDisplay').textContent = formatTime(timerSeconds);
+    $('timerMode').textContent = 'stopwatch';
+  }
+}
+
+function startTimer() {
+  const mins = parseInt($('timerMinutes').value);
+  if (mins > 0) timerTarget = mins * 60;
+  else timerTarget = 0;
+
+  if (timerPaused) {
+    timerPaused = false;
+  } else {
+    timerSeconds = 0;
+  }
+
+  timerRunning = true;
+  $('timerDisplay').style.color = '';
+  $('timerPulse').className = 'timer-pulse';
+  $('timerStart').style.display = 'none';
+  $('timerPause').style.display = '';
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    updateTimerDisplay();
+  }, 1000);
+  updateTimerDisplay();
+}
+
+function pauseTimer() {
+  timerRunning = false;
+  timerPaused = true;
+  clearInterval(timerInterval);
+  $('timerPulse').className = 'timer-pulse paused';
+  $('timerStart').style.display = '';
+  $('timerStart').textContent = 'resume';
+  $('timerPause').style.display = 'none';
+}
+
+function stopTimer() {
+  timerRunning = false;
+  timerPaused = false;
+  clearInterval(timerInterval);
+  $('timerPulse').className = 'timer-pulse stopped';
+  $('timerStart').style.display = '';
+  $('timerStart').textContent = 'start';
+  $('timerPause').style.display = 'none';
+  // Record session duration
+  if (timerSeconds > 0 && currentId) {
+    const entry = entries.find(e => e.id === currentId);
+    if (entry) { entry.timerUsed = true; entry.timerDuration = timerSeconds; save(); }
+  }
+}
+
+function resetTimer() {
+  stopTimer();
+  timerSeconds = 0;
+  timerTarget = 0;
+  $('timerMinutes').value = '';
+  $('timerDisplay').style.color = '';
+  updateTimerDisplay();
+}
+
+$('timerStart').addEventListener('click', startTimer);
+$('timerPause').addEventListener('click', pauseTimer);
+$('timerReset').addEventListener('click', resetTimer);
+
+// ─── CONTROLS ───
+$('toggleSidebar').addEventListener('click', () => {
+  $('sidebar').classList.toggle('hidden');
+});
+
+$('toggleTimer').addEventListener('click', () => {
+  const bar = $('timerBar');
+  bar.classList.toggle('collapsed');
+  $('toggleTimer').classList.toggle('active', !bar.classList.contains('collapsed'));
+});
+
+$('toggleTheme').addEventListener('click', () => {
+  document.body.classList.toggle('light');
+  localStorage.setItem('uj-theme', document.body.classList.contains('light') ? 'light' : 'dark');
+});
+
+$('newEntry').addEventListener('click', createEntry);
+
+// ─── EXPORT ───
+$('exportBtn').addEventListener('click', () => $('exportOverlay').classList.add('visible'));
+$('exportClose').addEventListener('click', () => $('exportOverlay').classList.remove('visible'));
+$('exportOverlay').addEventListener('click', (e) => {
+  if (e.target === $('exportOverlay')) $('exportOverlay').classList.remove('visible');
+});
+
+$('exportPdf').addEventListener('click', () => {
+  $('exportOverlay').classList.remove('visible');
+  window.print();
+});
+
+$('exportHtml').addEventListener('click', () => {
+  const entry = entries.find(e => e.id === currentId);
+  if (!entry) return;
+  const d = new Date(entry.created);
+  const dateStr = d.toISOString().split('T')[0];
+  const content = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Journal Entry - ${dateStr}</title>
+<style>
+body{font-family:'JetBrains Mono',monospace;max-width:700px;margin:40px auto;padding:20px;line-height:1.8;color:#1a1a1a;font-size:14px}
+mark[data-color="gold"]{background:rgba(201,169,110,.2);color:#8a7040}
+mark[data-color="teal"]{background:rgba(90,158,143,.2);color:#3a7a6a}
+mark[data-color="red"]{background:rgba(192,96,96,.2);color:#804040}
+mark[data-color="blue"]{background:rgba(106,159,216,.2);color:#4070a0}
+mark[data-color="purple"]{background:rgba(176,122,204,.2);color:#705090}
+mark[data-color="yellow"]{background:rgba(212,196,90,.2);color:#807030}
+.meta{font-size:12px;color:#999;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid #eee}
+</style></head><body>
+<div class="meta">${d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' })}${entry.timerUsed ? ' · session: ' + Math.floor(entry.timerDuration/60) + 'm' : ''}</div>
+${entry.html}
+</body></html>`;
+  const blob = new Blob([content], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `journal-${dateStr}.html`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  $('exportOverlay').classList.remove('visible');
+});
+
+$('exportMd').addEventListener('click', () => {
+  const entry = entries.find(e => e.id === currentId);
+  if (!entry) return;
+  const d = new Date(entry.created);
+  const dateStr = d.toISOString().split('T')[0];
+  const dateFull = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  // Convert HTML to markdown
+  function htmlToMd(html) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+
+    function walk(node) {
+      let md = '';
+      node.childNodes.forEach(child => {
+        if (child.nodeType === 3) {
+          // Text node
+          md += child.textContent;
+        } else if (child.nodeType === 1) {
+          const tag = child.tagName.toLowerCase();
+          if (tag === 'br') {
+            md += '\n';
+          } else if (tag === 'div' || tag === 'p') {
+            const inner = walk(child);
+            md += (md && !md.endsWith('\n') ? '\n' : '') + inner + '\n';
+          } else if (tag === 'mark') {
+            const color = child.dataset.color || '';
+            const inner = walk(child);
+            md += '==' + inner + '==' + (color !== 'gold' ? '{' + color + '}' : '');
+          } else if (tag === 'strong' || tag === 'b') {
+            md += '**' + walk(child) + '**';
+          } else if (tag === 'em' || tag === 'i') {
+            md += '*' + walk(child) + '*';
+          } else {
+            md += walk(child);
+          }
+        }
+      });
+      return md;
+    }
+
+    return walk(tmp).replace(/\n{3,}/g, '\n\n').trim();
+  }
+
+  const mdBody = htmlToMd(entry.html);
+  const meta = [
+    '---',
+    `date: ${dateStr}`,
+    `created: ${d.toISOString()}`,
+  ];
+  if (entry.timerUsed && entry.timerDuration > 0) {
+    meta.push(`session: ${Math.floor(entry.timerDuration / 60)}m ${entry.timerDuration % 60}s`);
+  }
+  meta.push('---', '');
+
+  const content = meta.join('\n') + '# ' + dateFull + '\n\n' + mdBody + '\n';
+  const blob = new Blob([content], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `journal-${dateStr}.md`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  $('exportOverlay').classList.remove('visible');
+});
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+    e.preventDefault();
+    save();
+  }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
+    e.preventDefault();
+    createEntry();
+  }
+});
+
+// ─── INIT ───
+if (localStorage.getItem('uj-theme') === 'light') document.body.classList.add('light');
+if (entries.length === 0) createEntry();
+else loadEntry(entries[0].id);
+renderList();
+updatePlaceholder();
+</script>
+</body>
+</html>
