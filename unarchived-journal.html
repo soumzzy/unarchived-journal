@@ -144,17 +144,16 @@ body{
 /* ─── TOOLS BAR ─── */
 .tools-bar{
   position:fixed;top:80px;right:0;left:240px;
-  height:auto;background:var(--bg3);
+  background:var(--bg3);
   border-bottom:1px solid var(--brd);
   padding:12px 24px;
   z-index:80;
   transition:left .3s,opacity .3s,max-height .3s;
-  max-height:500px;
+  max-height:300px;
   overflow-y:auto;
-  display:none;
+  opacity:1;
 }
-.tools-bar.visible{display:block}
-.tools-bar.collapsed{max-height:0;opacity:0;overflow:hidden;padding:0}
+.tools-bar.collapsed{max-height:0;opacity:0;overflow:hidden;padding:0;border:none}
 .sidebar.hidden ~ .tools-bar{left:0}
 .timer-bar.collapsed ~ .tools-bar{top:44px}
 
@@ -252,7 +251,6 @@ body{
 }
 .sidebar.hidden ~ .editor-wrap{margin-left:0}
 .timer-bar.collapsed ~ .editor-wrap{margin-top:44px}
-.tools-bar.visible:not(.collapsed) ~ .editor-wrap{margin-top:calc(80px + 300px)}
 
 .editor-meta{
   display:flex;align-items:center;gap:16px;
