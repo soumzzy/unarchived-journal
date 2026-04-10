@@ -68,6 +68,25 @@ body{
 .btn.active{border-color:var(--gd);color:var(--gd);background:var(--gd-dim)}
 .btn-icon{padding:5px 8px;font-size:.85rem;line-height:1}
 
+/* ─── TOOLS DROPDOWN ─── */
+.tools-dropdown{position:relative;display:inline-block}
+.tools-menu{
+  position:absolute;top:100%;right:0;
+  background:var(--bg2);border:1px solid var(--brd);
+  border-radius:var(--radius);padding:4px;
+  display:none;flex-direction:column;gap:2px;
+  z-index:110;margin-top:4px;
+  min-width:80px;
+}
+.tools-menu.visible{display:flex}
+.tools-item{
+  background:transparent;border:1px solid var(--brd);
+  color:var(--tx2);font-family:var(--mono);font-size:.7rem;
+  padding:5px 12px;border-radius:3px;cursor:pointer;
+  transition:all .2s;text-align:left;white-space:nowrap;
+}
+.tools-item:hover{border-color:var(--gd);color:var(--gd);background:var(--gd-dim)}
+
 /* ─── SIDEBAR ─── */
 .sidebar{
   position:fixed;left:0;top:44px;bottom:0;
@@ -421,6 +440,8 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
   .hl-mode{width:22px;height:18px;font-size:.6rem}
   .calc-overlay{width:160px;bottom:10px;right:10px}
   .templates-grid{grid-template-columns:1fr}
+  .tools-menu{min-width:70px}
+  .tools-item{padding:4px 10px;font-size:.65rem}
 }
 
 @media(max-width:500px){
@@ -462,9 +483,14 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
   </div>
   <div class="chrome-right">
     <button class="btn" id="toggleTimer">⏱</button>
-    <button class="btn" id="calcBtn">calc</button>
-    <button class="btn" id="graphBtn">graph</button>
-    <button class="btn" id="tplBtn">tpl</button>
+    <div class="tools-dropdown" id="toolsDropdown">
+      <button class="btn" id="toolsBtn">tools</button>
+      <div class="tools-menu" id="toolsMenu">
+        <button class="tools-item" id="calcBtn">calc</button>
+        <button class="tools-item" id="graphBtn">graph</button>
+        <button class="tools-item" id="tplBtn">tpl</button>
+      </div>
+    </div>
     <button class="btn" id="toggleTheme">◐</button>
     <button class="btn" id="exportBtn">export</button>
     <button class="btn" id="tourBtn" title="Help">?</button>
@@ -1047,14 +1073,26 @@ $('calcInsert').addEventListener('click', () => {
   autoSave();
 });
 
+// ─── TOOLS DROPDOWN ───
+$('toolsBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  $('toolsMenu').classList.toggle('visible');
+});
+
+document.addEventListener('click', () => {
+  $('toolsMenu').classList.remove('visible');
+});
+
 // ─── CALCULATOR ───
 $('calcBtn').addEventListener('click', () => {
   $('calcOverlay').classList.toggle('visible');
+  $('toolsMenu').classList.remove('visible');
 });
 
 // ─── GRAPH MODAL ───
 $('graphBtn').addEventListener('click', () => {
   $('graphModal').classList.add('visible');
+  $('toolsMenu').classList.remove('visible');
 });
 
 $('closeGraphModal').addEventListener('click', () => {
@@ -1173,6 +1211,7 @@ $('insertGraph').addEventListener('click', () => {
 // ─── TEMPLATES MODAL ───
 $('tplBtn').addEventListener('click', () => {
   $('tplModal').classList.add('visible');
+  $('toolsMenu').classList.remove('visible');
 });
 
 $('tplModal').addEventListener('click', (e) => {
@@ -1183,16 +1222,8 @@ document.querySelectorAll('.template-item').forEach(btn => {
   btn.addEventListener('click', () => {
     const templateId = btn.dataset.template;
     const templateText = templates[templateId] || '';
-    const sel = window.getSelection();
-    if (sel.rangeCount > 0) {
-      const range = sel.getRangeAt(0);
-      range.insertNode(document.createTextNode(templateText));
-      range.collapse(false);
-      sel.removeAllRanges();
-      sel.addRange(range);
-    } else {
-      editor.textContent += templateText;
-    }
+    editor.focus();
+    document.execCommand('insertText', false, templateText);
     autoSave();
     $('tplModal').classList.remove('visible');
   });
