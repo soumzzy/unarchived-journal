@@ -1,55 +1,61 @@
 # unarchived journal
 
-A local-first journal that looks like your terminal. Highlights, timer, PDF/MD/HTML export. One HTML file. No cloud. No dependencies.
-
-**🔗 [Open the journal](https://soumzzy.github.io/unarchived-journal)**
+A local-first prompt drafting & writing tool. Single HTML file. No cloud, no tracking, no dependencies.
 
 ## What it is
 
-A single HTML file you open in your browser. You write in it. It saves to localStorage. Nothing leaves your machine.
+Download `unarchived-journal.html`, open it in your browser, and start writing. Everything saves to your browser's localStorage—nothing leaves your computer.
 
-The editor uses a monospace terminal aesthetic with a prompt symbol, but the writing experience is fluid and distraction-free. Select text to highlight it in six colours with three modes (text colour, background, or both). Set a timer if you want a focused session. Export any entry as PDF, Markdown, or HTML when you need it somewhere else.
-
-That's it. No accounts. No syncing. No analytics. No build step. No npm install. Just open the file and write.
+Perfect for:
+- Drafting detailed prompts for AI systems with structured templates
+- Iterating on system instructions and context
+- Keeping your prompt evolution private and offline
+- Writing with focus—no distractions, no accounts
 
 ## Features
 
-**Writing.** Contenteditable editor with JetBrains Mono, terminal prompt styling, and automatic word count. Auto-saves as you type.
+**Writing** — Contenteditable editor with monospace terminal aesthetic. Auto-saves as you type.
 
-**Highlighting.** Select text and a colour bar appears. Six colours (gold, teal, red, blue, purple, yellow). Three modes: text colour only, background only, or both. Highlights persist across sessions and export correctly to all formats.
+**Templates** — Pre-structured sections for prompt work:
+- System (role & principles)
+- Context (background)
+- Instructions (steps & output format)
+- Example (input/output pairs)
+- Query (your question)
+- Reference (links & files)
 
-**Timer.** Optional. Leave the minutes blank for a stopwatch that counts up. Enter a number for a countdown. Session duration is recorded on the entry metadata.
+Plus markdown helpers: headings and links.
 
-**Dark/light mode.** Dark by default. Toggle with the theme button. Preference persists.
+**Highlighting** — Select text and choose from 6 colors in 3 modes (text, background, both). Highlights persist and export correctly.
 
-**Export.** Three options per entry:
-- Print / Save as PDF (uses browser print dialog)
-- Download as Markdown (.md with YAML frontmatter, highlight notation, session metadata)
-- Download as HTML (standalone file with all styles and highlights preserved)
+**Timer** — Optional focus sessions. Leave blank for stopwatch, enter minutes for countdown. Session duration records in exports.
 
-**Entries.** Sidebar lists all entries with date, time, and preview. Right-click to delete. Keyboard shortcuts: Cmd/Ctrl+N for new entry, Cmd/Ctrl+S for manual save.
+**Export** — Download each entry as:
+- Markdown (with YAML metadata, highlights preserved)
+- HTML (standalone, fully styled)
+- PDF (via browser print dialog)
 
-**Storage.** Everything lives in localStorage. Plain HTML text is small. A 1,000-word entry with highlights is roughly 6KB. You can journal daily for years before approaching the browser's storage limit.
+**Storage** — All in localStorage. A 1,000-word prompt with highlights is ~6KB. You can maintain hundreds of prompts before hitting typical browser limits (5-10MB).
 
 ## Usage
 
-Download `journal.html`. Open it in your browser. Start writing.
+1. Download the file
+2. Open in any modern browser
+3. Start writing
 
-No server. No install. No configuration.
+No server. No installation. No configuration. Works offline. Works forever.
 
 ## Keyboard shortcuts
 
 | Shortcut | Action |
 |---|---|
 | Cmd/Ctrl + N | New entry |
-| Cmd/Ctrl + S | Save |
+| Cmd/Ctrl + S | Manual save |
 
-## Design
+## Philosophy
 
-Built with JetBrains Mono for the editor and Cormorant Garamond for the chrome. Dark palette with gold accents. The visual language is intentionally terminal-like but the writing experience is soft, not rigid.
-
-Part of the UnArchived family of data-sovereign tools.
+Part of **Unarchived** — tools for digital self-sovereignty. Your data, your computer, your control.
 
 ## License
 
-MIT
+MIT — Use, modify, fork, and share freely.
