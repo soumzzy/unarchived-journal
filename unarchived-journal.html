@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>unarchived journal</title>
+<title>unarchived</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
@@ -75,6 +75,7 @@ body{
   border-right:1px solid var(--brd);
   overflow-y:auto;z-index:90;
   transition:transform .3s;
+  font-family:var(--mono);
 }
 .sidebar.hidden{transform:translateX(-240px)}
 .sidebar-header{
@@ -84,6 +85,7 @@ body{
 .sidebar-header h3{
   font-size:.65rem;font-weight:600;color:var(--tx3);
   letter-spacing:.1em;text-transform:uppercase;
+  font-family:var(--mono);
 }
 .new-entry-btn{
   background:var(--gd-dim);border:1px solid rgba(201,169,110,.2);
@@ -97,6 +99,7 @@ body{
 .entry-item{
   padding:10px 12px;border-radius:var(--radius);cursor:pointer;
   margin-bottom:2px;transition:background .15s;
+  font-family:var(--mono);
 }
 .entry-item:hover{background:var(--bg3)}
 .entry-item.active{background:var(--bg3);border-left:2px solid var(--gd);padding-left:10px}
@@ -138,6 +141,108 @@ body{
 .timer-pulse.stopped{display:none}
 @keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
 
+/* ─── TOOLS BAR ─── */
+.tools-bar{
+  position:fixed;top:80px;right:0;left:240px;
+  height:auto;background:var(--bg3);
+  border-bottom:1px solid var(--brd);
+  padding:12px 24px;
+  z-index:80;
+  transition:left .3s,opacity .3s,max-height .3s;
+  max-height:500px;
+  overflow-y:auto;
+  display:none;
+}
+.tools-bar.visible{display:block}
+.tools-bar.collapsed{max-height:0;opacity:0;overflow:hidden;padding:0}
+.sidebar.hidden ~ .tools-bar{left:0}
+.timer-bar.collapsed ~ .tools-bar{top:44px}
+
+.tools-tabs{
+  display:flex;gap:8px;margin-bottom:12px;
+  border-bottom:1px solid var(--brd);
+  padding-bottom:8px;
+}
+.tool-tab{
+  background:transparent;border:none;
+  color:var(--tx2);font-family:var(--mono);font-size:.75rem;
+  padding:4px 12px;cursor:pointer;
+  transition:all .2s;
+  border-bottom:2px solid transparent;
+}
+.tool-tab:hover{color:var(--gd)}
+.tool-tab.active{color:var(--gd);border-bottom-color:var(--gd)}
+
+.tool-content{display:none}
+.tool-content.active{display:block}
+
+/* Calculator */
+#calcDisplay{
+  background:transparent;border:1px solid var(--brd);
+  color:var(--gd);font-family:var(--mono);font-size:.9rem;
+  padding:8px;border-radius:var(--radius);
+  text-align:right;width:100%;
+  box-sizing:border-box;
+  margin-bottom:8px;
+}
+.calc-buttons{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:4px;
+  margin-bottom:8px;
+}
+.calc-btn{
+  background:transparent;border:1px solid var(--brd);
+  color:var(--tx2);font-family:var(--mono);font-size:.7rem;
+  padding:6px 2px;border-radius:3px;cursor:pointer;
+  transition:all .2s;
+}
+.calc-btn:hover{border-color:var(--gd);color:var(--gd)}
+.calc-btn.op{background:var(--gd-dim);border-color:rgba(201,169,110,.3);color:var(--gd)}
+#calcInsert{
+  background:var(--gd-dim);border:1px solid rgba(201,169,110,.3);
+  color:var(--gd);font-family:var(--mono);font-size:.65rem;
+  padding:6px;border-radius:var(--radius);cursor:pointer;
+  transition:all .2s;width:100%;
+}
+#calcInsert:hover{background:rgba(201,169,110,.25)}
+
+/* Graphs/Tables */
+.graph-form{
+  display:flex;flex-direction:column;gap:8px;
+}
+.form-group{
+  display:flex;flex-direction:column;gap:4px;
+}
+.form-group label{
+  font-size:.7rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;
+}
+.form-group input,.form-group select,.form-group textarea{
+  background:transparent;border:1px solid var(--brd);
+  color:var(--tx);font-family:var(--mono);font-size:.75rem;
+  padding:6px;border-radius:var(--radius);
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--gd)}
+.graph-actions{display:flex;gap:4px}
+.graph-btn{
+  flex:1;padding:6px;border-radius:var(--radius);
+  font-family:var(--mono);font-size:.7rem;cursor:pointer;
+  border:1px solid var(--brd);background:transparent;color:var(--tx2);
+  transition:all .2s;
+}
+.graph-btn:hover{border-color:var(--gd);color:var(--gd)}
+.graph-btn.primary{background:var(--gd-dim);border-color:rgba(201,169,110,.3);color:var(--gd)}
+
+/* Templates */
+.templates-list{
+  display:grid;grid-template-columns:1fr 1fr;gap:6px;
+}
+.template-item{
+  background:transparent;border:1px solid var(--brd);
+  color:var(--tx2);font-family:var(--mono);font-size:.7rem;
+  padding:6px 8px;border-radius:var(--radius);cursor:pointer;
+  text-align:center;transition:all .2s;
+}
+.template-item:hover{border-color:var(--gd);color:var(--gd);background:var(--gd-dim)}
+
 /* ─── EDITOR ─── */
 .editor-wrap{
   margin-left:240px;margin-top:80px;
@@ -147,6 +252,7 @@ body{
 }
 .sidebar.hidden ~ .editor-wrap{margin-left:0}
 .timer-bar.collapsed ~ .editor-wrap{margin-top:44px}
+.tools-bar.visible:not(.collapsed) ~ .editor-wrap{margin-top:calc(80px + 300px)}
 
 .editor-meta{
   display:flex;align-items:center;gap:16px;
@@ -219,7 +325,6 @@ body{
 .hl-mode.active{border-color:var(--gd);color:var(--gd);background:var(--gd-dim)}
 .hl-sep{width:1px;height:16px;background:var(--brd);margin:0 4px}
 
-/* Highlight rendering — text mode */
 mark[data-mode="text"][data-color="gold"]{background:transparent;color:var(--gd)}
 mark[data-mode="text"][data-color="teal"]{background:transparent;color:var(--tl)}
 mark[data-mode="text"][data-color="red"]{background:transparent;color:var(--rd)}
@@ -227,7 +332,6 @@ mark[data-mode="text"][data-color="blue"]{background:transparent;color:var(--bl)
 mark[data-mode="text"][data-color="purple"]{background:transparent;color:var(--mg)}
 mark[data-mode="text"][data-color="yellow"]{background:transparent;color:var(--yw)}
 
-/* Highlight rendering — bg mode */
 mark[data-mode="bg"][data-color="gold"]{background:rgba(201,169,110,.2);color:inherit;border-radius:2px;padding:0 2px}
 mark[data-mode="bg"][data-color="teal"]{background:rgba(90,158,143,.2);color:inherit;border-radius:2px;padding:0 2px}
 mark[data-mode="bg"][data-color="red"]{background:rgba(192,96,96,.2);color:inherit;border-radius:2px;padding:0 2px}
@@ -235,7 +339,6 @@ mark[data-mode="bg"][data-color="blue"]{background:rgba(106,159,216,.2);color:in
 mark[data-mode="bg"][data-color="purple"]{background:rgba(176,122,204,.2);color:inherit;border-radius:2px;padding:0 2px}
 mark[data-mode="bg"][data-color="yellow"]{background:rgba(212,196,90,.2);color:inherit;border-radius:2px;padding:0 2px}
 
-/* Highlight rendering — both mode */
 mark[data-mode="both"][data-color="gold"]{background:rgba(201,169,110,.2);color:var(--gd);border-radius:2px;padding:0 2px}
 mark[data-mode="both"][data-color="teal"]{background:rgba(90,158,143,.2);color:var(--tl);border-radius:2px;padding:0 2px}
 mark[data-mode="both"][data-color="red"]{background:rgba(192,96,96,.2);color:var(--rd);border-radius:2px;padding:0 2px}
@@ -243,13 +346,45 @@ mark[data-mode="both"][data-color="blue"]{background:rgba(106,159,216,.2);color:
 mark[data-mode="both"][data-color="purple"]{background:rgba(176,122,204,.2);color:var(--mg);border-radius:2px;padding:0 2px}
 mark[data-mode="both"][data-color="yellow"]{background:rgba(212,196,90,.2);color:var(--yw);border-radius:2px;padding:0 2px}
 
-/* Legacy marks without data-mode (backwards compat) */
 mark[data-color="gold"]:not([data-mode]){background:rgba(201,169,110,.2);color:var(--gd);border-radius:2px;padding:0 2px}
 mark[data-color="teal"]:not([data-mode]){background:rgba(90,158,143,.2);color:var(--tl);border-radius:2px;padding:0 2px}
 mark[data-color="red"]:not([data-mode]){background:rgba(192,96,96,.2);color:var(--rd);border-radius:2px;padding:0 2px}
 mark[data-color="blue"]:not([data-mode]){background:rgba(106,159,216,.2);color:var(--bl);border-radius:2px;padding:0 2px}
 mark[data-color="purple"]:not([data-mode]){background:rgba(176,122,204,.2);color:var(--mg);border-radius:2px;padding:0 2px}
 mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:var(--yw);border-radius:2px;padding:0 2px}
+
+/* ─── TOUR ─── */
+.tour-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);
+  display:none;align-items:center;justify-content:center;z-index:250;
+  padding:20px;
+}
+.tour-overlay.visible{display:flex}
+.tour-box{
+  background:var(--bg2);border:1px solid var(--brd);
+  border-radius:10px;padding:40px;max-width:500px;width:100%;
+}
+.tour-box h2{font-family:var(--serif);font-size:1.5rem;color:var(--tx);margin-bottom:24px;font-weight:400}
+.tour-step{display:none}
+.tour-step.active{display:block}
+.tour-step p{font-size:.9rem;color:var(--tx2);line-height:1.8;margin-bottom:16px}
+.tour-step .step-num{font-size:.7rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.tour-controls{display:flex;gap:12px;margin-top:32px}
+.tour-btn{
+  flex:1;padding:10px;border-radius:var(--radius);
+  font-family:var(--mono);font-size:.8rem;cursor:pointer;
+  border:1px solid var(--brd);background:transparent;color:var(--tx2);
+  transition:all .2s;
+}
+.tour-btn:hover{border-color:var(--gd);color:var(--gd)}
+.tour-btn.primary{background:var(--gd-dim);border-color:rgba(201,169,110,.3);color:var(--gd)}
+.tour-progress{font-size:.7rem;color:var(--tx3);text-align:center;margin-top:20px}
+
+.tour-highlight{
+  box-shadow:0 0 0 3px var(--gd),0 0 12px rgba(201,169,110,.4) !important;
+  border-radius:var(--radius);
+  transition:box-shadow .3s;
+}
 
 /* ─── EXPORT OVERLAY ─── */
 .export-overlay{
@@ -263,7 +398,7 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
 }
 .export-box h2{font-family:var(--serif);font-size:1.3rem;color:var(--tx);margin-bottom:16px;font-weight:400}
 .export-box p{font-size:.8rem;color:var(--tx2);margin-bottom:20px;line-height:1.6}
-.export-actions{display:flex;gap:8px}
+.export-actions{display:flex;gap:8px;flex-wrap:wrap}
 .export-btn{
   flex:1;padding:10px;border-radius:var(--radius);
   font-family:var(--mono);font-size:.75rem;cursor:pointer;
@@ -279,33 +414,57 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
 ::-webkit-scrollbar-thumb{background:var(--brd);border-radius:2px}
 ::-webkit-scrollbar-thumb:hover{background:var(--tx3)}
 
-/* ─── RESPONSIVE ─── */
-@media(max-width:768px){
-  .sidebar{width:200px}
-  .sidebar.hidden ~ .editor-wrap{margin-left:0}
-  .editor-wrap{margin-left:200px;padding:24px 20px 100px}
-  .timer-bar{left:200px}
-  .sidebar.hidden ~ .timer-bar{left:0}
-}
-@media(max-width:500px){
-  .sidebar{width:100%;z-index:95}
-  .editor-wrap{margin-left:0;padding:20px 16px 100px}
-  .timer-bar{left:0}
-}
-
 /* ─── PRINT ─── */
 @media print{
-  .chrome,.sidebar,.timer-bar,.highlight-bar,.export-overlay{display:none!important}
+  .chrome,.sidebar,.timer-bar,.tools-bar,.highlight-bar,.export-overlay,.tour-overlay{display:none!important}
   .editor-wrap{margin:0!important;padding:40px!important}
   body{background:#fff!important;color:#111!important}
-  mark[data-color="gold"]{background:rgba(201,169,110,.15)!important;color:#8a7040!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  mark[data-color="teal"]{background:rgba(90,158,143,.15)!important;color:#3a7a6a!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  mark[data-color="red"]{background:rgba(192,96,96,.15)!important;color:#804040!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  mark[data-color="blue"]{background:rgba(106,159,216,.15)!important;color:#4070a0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  mark[data-color="purple"]{background:rgba(176,122,204,.15)!important;color:#705090!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  mark[data-color="yellow"]{background:rgba(212,196,90,.15)!important;color:#807030!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  mark[data-mode="text"]{background:transparent!important}
-  mark[data-mode="bg"]{color:inherit!important}
+  mark{color:#111!important}
+}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  .sidebar{width:100%;height:auto;top:44px;max-height:50vh;border-right:none;border-bottom:1px solid var(--brd)}
+  .sidebar.hidden{transform:translateX(-100vw)}
+  .timer-bar{left:0;right:0}
+  .tools-bar{left:0;right:0;top:80px}
+  .editor-wrap{margin-left:0;margin-top:44px;padding:24px 20px 100px}
+  .chrome-right{gap:4px}
+  .btn{padding:5px 8px;font-size:.65rem}
+  .editor{font-size:.85rem}
+  .editor-meta{flex-direction:column;align-items:flex-start;gap:8px}
+  .editor-meta-words{margin-left:0}
+  .highlight-bar{bottom:10px;padding:4px 8px;gap:4px}
+  .hl-btn{width:18px;height:18px;font-size:.5rem}
+  .hl-mode{width:22px;height:18px;font-size:.6rem}
+  .templates-list{grid-template-columns:1fr}
+}
+
+@media(max-width:500px){
+  .chrome{padding:0 12px}
+  .chrome-title{font-size:.95rem}
+  .chrome-right{gap:4px}
+  .btn{padding:4px 6px;font-size:.6rem}
+  .sidebar{max-height:40vh}
+  .sidebar-header h3{font-size:.6rem}
+  .editor-wrap{margin-top:44px;padding:16px 12px 80px}
+  .editor{font-size:.8rem}
+  .editor-meta{font-size:.65rem;gap:4px}
+  .editor-meta-date{font-size:.65rem}
+  .editor-meta-words{font-size:.6rem}
+  .prompt-symbol{font-size:.8rem}
+  .timer-display{font-size:.75rem}
+  .timer-controls{gap:4px;flex-wrap:wrap}
+  .timer-input{width:40px;padding:2px 4px;font-size:.6rem}
+  .timer-label{font-size:.6rem}
+  .highlight-bar{bottom:8px;padding:3px 6px}
+  .hl-btn{width:16px;height:16px;font-size:.45rem}
+  .hl-sep{height:12px}
+  .tour-box{padding:24px}
+  .tour-box h2{font-size:1.2rem;margin-bottom:16px}
+  .tour-step p{font-size:.8rem;margin-bottom:12px}
+  .calc-buttons{grid-template-columns:repeat(3,1fr)}
+  .tool-tab{padding:4px 8px;font-size:.65rem}
 }
 </style>
 </head>
@@ -314,13 +473,15 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
 <!-- CHROME -->
 <div class="chrome">
   <div class="chrome-left">
-    <button class="btn btn-icon" id="toggleSidebar" title="Toggle sidebar">☰</button>
-    <span class="chrome-title"><em>un</em>archived journal</span>
+    <button class="btn btn-icon" id="toggleSidebar" title="Toggle entries">☰</button>
+    <span class="chrome-title"><em>un</em>archived</span>
   </div>
   <div class="chrome-right">
-    <button class="btn" id="toggleTimer">timer</button>
+    <button class="btn" id="toggleTimer">⏱</button>
+    <button class="btn" id="toggleTools">tools</button>
     <button class="btn" id="toggleTheme">◐</button>
     <button class="btn" id="exportBtn">export</button>
+    <button class="btn" id="tourBtn" title="Help">?</button>
   </div>
 </div>
 
@@ -346,6 +507,81 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
     <button class="btn" id="timerStart">start</button>
     <button class="btn" id="timerPause" style="display:none">pause</button>
     <button class="btn" id="timerReset">reset</button>
+  </div>
+</div>
+
+<!-- TOOLS BAR -->
+<div class="tools-bar collapsed" id="toolsBar">
+  <div class="tools-tabs">
+    <button class="tool-tab active" data-tool="calc">calc</button>
+    <button class="tool-tab" data-tool="graph">graph</button>
+    <button class="tool-tab" data-tool="templates">templates</button>
+  </div>
+
+  <!-- Calculator -->
+  <div class="tool-content active" id="calcContent">
+    <input type="text" id="calcDisplay" readonly value="0">
+    <div class="calc-buttons">
+      <button class="calc-btn" data-calc="7">7</button>
+      <button class="calc-btn" data-calc="8">8</button>
+      <button class="calc-btn" data-calc="9">9</button>
+      <button class="calc-btn op" data-calc="/">/</button>
+      <button class="calc-btn" data-calc="4">4</button>
+      <button class="calc-btn" data-calc="5">5</button>
+      <button class="calc-btn" data-calc="6">6</button>
+      <button class="calc-btn op" data-calc="*">*</button>
+      <button class="calc-btn" data-calc="1">1</button>
+      <button class="calc-btn" data-calc="2">2</button>
+      <button class="calc-btn" data-calc="3">3</button>
+      <button class="calc-btn op" data-calc="-">-</button>
+      <button class="calc-btn" data-calc="0">0</button>
+      <button class="calc-btn op" data-calc="+">+</button>
+      <button class="calc-btn op" data-calc="=">=</button>
+    </div>
+    <button id="calcInsert">insert result</button>
+  </div>
+
+  <!-- Graphs/Tables -->
+  <div class="tool-content" id="graphContent">
+    <div class="graph-form">
+      <div class="form-group">
+        <label>Type</label>
+        <select id="graphType">
+          <option value="line">Line graph</option>
+          <option value="bar">Bar chart</option>
+          <option value="table">Table</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" id="graphTitle" placeholder="e.g., Daily Words">
+      </div>
+      <div class="form-group" id="csvGroup">
+        <label>Data (CSV)</label>
+        <textarea id="graphData" placeholder="x,y&#10;jan,10&#10;feb,20" rows="3"></textarea>
+      </div>
+      <div class="form-group" id="tableDataGroup" style="display:none">
+        <label>Data (pipe-separated)</label>
+        <textarea id="tableData" placeholder="Name,Age&#10;John,30&#10;Jane,25" rows="3"></textarea>
+      </div>
+      <div class="graph-actions">
+        <button class="graph-btn primary" id="insertGraph">insert</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Templates -->
+  <div class="tool-content" id="templatesContent">
+    <div class="templates-list">
+      <button class="template-item" data-template="js-comment">// JS</button>
+      <button class="template-item" data-template="py-comment"># Python</button>
+      <button class="template-item" data-template="h1"># H1</button>
+      <button class="template-item" data-template="h2">## H2</button>
+      <button class="template-item" data-template="list">- List</button>
+      <button class="template-item" data-template="code">```code```</button>
+      <button class="template-item" data-template="csv">CSV</button>
+      <button class="template-item" data-template="json">JSON</button>
+    </div>
   </div>
 </div>
 
@@ -393,20 +629,163 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
   </div>
 </div>
 
+<!-- TOUR OVERLAY -->
+<div class="tour-overlay" id="tourOverlay">
+  <div class="tour-box">
+    <h2><em>un</em>archived</h2>
+    <div class="tour-step active">
+      <div class="step-num">What is this</div>
+      <p>A local-first journal. Write in your browser. Everything stays on your machine. No accounts, no cloud, no tracking.</p>
+    </div>
+    <div class="tour-step">
+      <div class="step-num">Writing</div>
+      <p>Type freely. Word count updates as you write. Auto-saves every time you pause. Cmd/Ctrl+S to manually save.</p>
+    </div>
+    <div class="tour-step">
+      <div class="step-num">Highlighting</div>
+      <p>Select text to highlight it. Choose a colour, then pick text-only, background, or both. Highlights persist and export correctly.</p>
+    </div>
+    <div class="tour-step">
+      <div class="step-num">Timer</div>
+      <p>Click the timer button to show/hide. Leave minutes blank for a stopwatch. Enter a number for countdown. Session duration is recorded.</p>
+    </div>
+    <div class="tour-step">
+      <div class="step-num">Tools</div>
+      <p>Click "tools" to expand. Calculator, graphs/tables, and templates in one panel. Click tabs to switch between them.</p>
+    </div>
+    <div class="tour-step">
+      <div class="step-num">Entries</div>
+      <p>Click the menu (☰) to see all your entries. Click one to open it. Right-click to delete. Cmd/Ctrl+N for a new entry.</p>
+    </div>
+    <div class="tour-step">
+      <div class="step-num">Export</div>
+      <p>Click export to download an entry as PDF, Markdown, or HTML. Perfect for moving things elsewhere while keeping your archives local.</p>
+    </div>
+    <div class="tour-step">
+      <div class="step-num">Theme</div>
+      <p>Click the moon icon (◐) to toggle dark/light mode. Your preference sticks around.</p>
+    </div>
+    <div class="tour-controls">
+      <button class="tour-btn" id="tourPrev">back</button>
+      <button class="tour-btn primary" id="tourNext">next</button>
+    </div>
+    <div class="tour-progress"><span id="tourProgress">1 / 8</span></div>
+  </div>
+</div>
+
 <script>
 // ─── STATE ───
 let entries = JSON.parse(localStorage.getItem('uj-entries') || '[]');
 let currentId = null;
 let timerInterval = null;
 let timerSeconds = 0;
-let timerTarget = 0; // 0 = stopwatch mode
+let timerTarget = 0;
 let timerRunning = false;
 let timerPaused = false;
 let autoSaveTimeout = null;
+let tourStep = 0;
+const totalTourSteps = 8;
+
+// Calculator state
+let calcDisplay = '0';
+let calcMemory = 0;
+let calcOp = null;
+let calcNew = true;
+
+// Templates
+const templates = {
+  'js-comment': `/**\n * [description]\n */`,
+  'py-comment': `# [comment]`,
+  'h1': `# `,
+  'h2': `## `,
+  'list': `- `,
+  'code': `\`\`\`\n[code]\n\`\`\``,
+  'csv': `label1,label2,label3\nvalue1,value2,value3`,
+  'json': `{\n  "key": "value"\n}`,
+};
 
 const $ = id => document.getElementById(id);
 const editor = $('editor');
 const entryList = $('entryList');
+
+// ─── TOUR ───
+function clearTourHighlights() {
+  document.querySelectorAll('.tour-highlight').forEach(el => {
+    el.classList.remove('tour-highlight');
+  });
+}
+
+function highlightTourElement(selector) {
+  clearTourHighlights();
+  const el = document.querySelector(selector);
+  if (el) {
+    el.classList.add('tour-highlight');
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function updateTourDisplay() {
+  const steps = document.querySelectorAll('.tour-step');
+  steps.forEach((step, idx) => {
+    step.classList.toggle('active', idx === tourStep);
+  });
+  $('tourProgress').textContent = (tourStep + 1) + ' / ' + totalTourSteps;
+  $('tourPrev').style.display = tourStep === 0 ? 'none' : '';
+  $('tourNext').textContent = tourStep === totalTourSteps - 1 ? 'got it' : 'next';
+
+  const highlights = [
+    '#editor',
+    '#editor',
+    '#highlightBar',
+    '#toggleTimer',
+    '#toggleTools',
+    '#sidebar',
+    '#exportBtn',
+    '#toggleTheme'
+  ];
+
+  if (highlights[tourStep]) {
+    highlightTourElement(highlights[tourStep]);
+  }
+}
+
+function openTour() {
+  tourStep = 0;
+  updateTourDisplay();
+  $('tourOverlay').classList.add('visible');
+}
+
+function closeTour() {
+  $('tourOverlay').classList.remove('visible');
+  clearTourHighlights();
+  localStorage.setItem('uj-tour-shown', 'true');
+}
+
+$('tourBtn').addEventListener('click', openTour);
+$('tourNext').addEventListener('click', () => {
+  if (tourStep < totalTourSteps - 1) {
+    tourStep++;
+    updateTourDisplay();
+  } else {
+    closeTour();
+  }
+});
+$('tourPrev').addEventListener('click', () => {
+  if (tourStep > 0) {
+    tourStep--;
+    updateTourDisplay();
+  }
+});
+$('tourOverlay').addEventListener('click', (e) => {
+  if (e.target === $('tourOverlay')) {
+    clearTourHighlights();
+    closeTour();
+  }
+});
+
+if (!localStorage.getItem('uj-tour-shown')) {
+  setTimeout(openTour, 500);
+}
 
 // ─── PLACEHOLDER ───
 function updatePlaceholder() {
@@ -416,7 +795,6 @@ function updatePlaceholder() {
     editor.removeAttribute('data-empty');
   }
 }
-// CSS for placeholder
 const phStyle = document.createElement('style');
 phStyle.textContent = `.editor[data-empty="true"]:before{content:attr(data-placeholder);color:var(--tx3);pointer-events:none;position:absolute}`;
 document.head.appendChild(phStyle);
@@ -524,6 +902,28 @@ function countWords() {
 }
 
 // ─── EDITOR EVENTS ───
+editor.addEventListener('paste', (e) => {
+  e.preventDefault();
+  const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  range.deleteContents();
+  const lines = text.split(/\r?\n/);
+  const frag = document.createDocumentFragment();
+  lines.forEach((line, i) => {
+    frag.appendChild(document.createTextNode(line));
+    if (i < lines.length - 1) frag.appendChild(document.createElement('br'));
+  });
+  range.insertNode(frag);
+  range.collapse(false);
+  sel.removeAllRanges();
+  sel.addRange(range);
+  updatePlaceholder();
+  countWords();
+  autoSave();
+});
+
 editor.addEventListener('input', () => {
   updatePlaceholder();
   countWords();
@@ -542,14 +942,14 @@ function getHlMode() {
 
 $('hlModeText').addEventListener('click', () => {
   hlTextActive = !hlTextActive;
-  if (!hlTextActive && !hlBgActive) hlBgActive = true; // at least one must be active
+  if (!hlTextActive && !hlBgActive) hlBgActive = true;
   $('hlModeText').classList.toggle('active', hlTextActive);
   $('hlModeBg').classList.toggle('active', hlBgActive);
 });
 
 $('hlModeBg').addEventListener('click', () => {
   hlBgActive = !hlBgActive;
-  if (!hlTextActive && !hlBgActive) hlTextActive = true; // at least one must be active
+  if (!hlTextActive && !hlBgActive) hlTextActive = true;
   $('hlModeText').classList.toggle('active', hlTextActive);
   $('hlModeBg').classList.toggle('active', hlBgActive);
 });
@@ -573,7 +973,6 @@ document.querySelectorAll('.hl-btn').forEach(btn => {
     if (!sel || sel.rangeCount === 0) return;
     const range = sel.getRangeAt(0);
     if (color === 'clear') {
-      // Remove highlights in selection
       const contents = range.cloneContents();
       const marks = contents.querySelectorAll('mark');
       if (marks.length === 0) {
@@ -616,6 +1015,196 @@ document.querySelectorAll('.hl-btn').forEach(btn => {
   });
 });
 
+// ─── CALCULATOR ───
+function updateCalcDisplay() {
+  $('calcDisplay').value = calcDisplay;
+}
+
+document.querySelectorAll('.calc-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const val = btn.dataset.calc;
+    if (val === '=') {
+      try {
+        if (calcOp && calcNew) return;
+        const result = eval(calcDisplay);
+        calcDisplay = String(result);
+        calcOp = null;
+        calcNew = true;
+      } catch(e) {
+        calcDisplay = 'error';
+      }
+    } else if (['+', '-', '*', '/'].includes(val)) {
+      if (!calcNew) calcDisplay += val;
+      calcOp = val;
+      calcNew = true;
+    } else {
+      if (calcNew || calcDisplay === '0') {
+        calcDisplay = val;
+        calcNew = false;
+      } else {
+        calcDisplay += val;
+      }
+    }
+    updateCalcDisplay();
+  });
+});
+
+$('calcInsert').addEventListener('click', () => {
+  const sel = window.getSelection();
+  if (sel.rangeCount > 0) {
+    const range = sel.getRangeAt(0);
+    range.insertNode(document.createTextNode(calcDisplay));
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  } else {
+    editor.textContent += calcDisplay;
+  }
+  autoSave();
+});
+
+// ─── TOOLS BAR ───
+$('toggleTools').addEventListener('click', () => {
+  const bar = $('toolsBar');
+  bar.classList.toggle('collapsed');
+  $('toggleTools').classList.toggle('active', !bar.classList.contains('collapsed'));
+});
+
+document.querySelectorAll('.tool-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const tool = tab.dataset.tool;
+    document.querySelectorAll('.tool-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tool-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    $( tool + 'Content').classList.add('active');
+  });
+});
+
+// ─── GRAPHS ───
+$('graphType').addEventListener('change', (e) => {
+  const isTable = e.target.value === 'table';
+  $('csvGroup').style.display = isTable ? 'none' : '';
+  $('tableDataGroup').style.display = isTable ? '' : 'none';
+});
+
+function createSVGGraph(type, title, data) {
+  const width = 280, height = 150;
+  const padding = 25;
+  const graphWidth = width - padding * 2;
+  const graphHeight = height - padding * 2;
+
+  const lines = data.trim().split('\n').filter(l => l.length > 0);
+  const points = lines.map(line => {
+    const [x, y] = line.split(',');
+    return { x: x.trim(), y: parseFloat(y) || 0 };
+  });
+
+  if (points.length < 2) return '<p style="color:var(--tx3);font-size:.75rem">Need at least 2 points</p>';
+
+  const maxY = Math.max(...points.map(p => p.y)) || 1;
+  const minY = 0;
+  const yRange = maxY - minY;
+
+  let svg = `<svg width="${width}" height="${height}" style="border:1px solid var(--brd);border-radius:4px;margin:8px 0">
+    <rect width="${width}" height="${height}" fill="var(--bg)" />`;
+
+  if (type === 'line') {
+    let pathD = '';
+    points.forEach((p, i) => {
+      const x = padding + (i / (points.length - 1)) * graphWidth;
+      const y = padding + graphHeight - ((p.y - minY) / yRange) * graphHeight;
+      pathD += (i === 0 ? 'M' : 'L') + x + ',' + y;
+    });
+    svg += `<path d="${pathD}" stroke="var(--gd)" stroke-width="2" fill="none" />`;
+  } else if (type === 'bar') {
+    const barWidth = graphWidth / points.length * 0.6;
+    points.forEach((p, i) => {
+      const x = padding + (i / points.length) * graphWidth + (graphWidth / points.length - barWidth) / 2;
+      const barHeight = ((p.y - minY) / yRange) * graphHeight;
+      const y = padding + graphHeight - barHeight;
+      svg += `<rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" fill="var(--gd-dim)" stroke="var(--gd)" stroke-width="1" />`;
+    });
+  }
+
+  svg += `<line x1="${padding}" y1="${padding + graphHeight}" x2="${width - padding}" y2="${padding + graphHeight}" stroke="var(--brd)" stroke-width="1" />`;
+  svg += `<line x1="${padding}" y1="${padding}" x2="${padding}" y2="${padding + graphHeight}" stroke="var(--brd)" stroke-width="1" />`;
+  svg += `<text x="${width / 2}" y="${height - 5}" text-anchor="middle" fill="var(--tx3)" font-size="11">${title}</text>`;
+  svg += '</svg>';
+
+  return svg;
+}
+
+function createHTMLTable(data) {
+  const lines = data.trim().split('\n').filter(l => l.length > 0);
+  if (lines.length === 0) return '<p style="color:var(--tx3);font-size:.75rem">No data</p>';
+
+  const headers = lines[0].split(',');
+  let html = '<table style="border-collapse:collapse;margin:8px 0;width:100%;font-size:.8rem"><tr>';
+  headers.forEach(h => {
+    html += '<th style="border:1px solid var(--brd);padding:6px;background:var(--gd-dim);color:var(--gd)">' + h.trim() + '</th>';
+  });
+  html += '</tr>';
+
+  for (let i = 1; i < lines.length; i++) {
+    const cells = lines[i].split(',');
+    html += '<tr>';
+    cells.forEach(c => {
+      html += '<td style="border:1px solid var(--brd);padding:6px">' + c.trim() + '</td>';
+    });
+    html += '</tr>';
+  }
+  html += '</table>';
+  return html;
+}
+
+$('insertGraph').addEventListener('click', () => {
+  const type = $('graphType').value;
+  const title = $('graphTitle').value || 'Data';
+  const data = type === 'table' ? $('tableData').value : $('graphData').value;
+
+  let html;
+  if (type === 'table') {
+    html = createHTMLTable(data);
+  } else {
+    html = createSVGGraph(type, title, data);
+  }
+
+  const sel = window.getSelection();
+  if (sel.rangeCount > 0) {
+    const range = sel.getRangeAt(0);
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    range.insertNode(div);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  autoSave();
+  $('graphTitle').value = '';
+  $('graphData').value = '';
+  $('tableData').value = '';
+});
+
+// ─── TEMPLATES ───
+document.querySelectorAll('.template-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const templateId = btn.dataset.template;
+    const templateText = templates[templateId] || '';
+    const sel = window.getSelection();
+    if (sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0);
+      range.insertNode(document.createTextNode(templateText));
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    } else {
+      editor.textContent += templateText;
+    }
+    autoSave();
+  });
+});
+
 // ─── TIMER ───
 function formatTime(secs) {
   const m = Math.floor(secs / 60);
@@ -632,7 +1221,6 @@ function updateTimerDisplay() {
       stopTimer();
       $('timerDisplay').style.color = 'var(--rd)';
       $('timerMode').textContent = 'time\'s up';
-      // Record session
       const entry = entries.find(e => e.id === currentId);
       if (entry) { entry.timerUsed = true; entry.timerDuration = timerSeconds; save(); }
     }
@@ -685,7 +1273,6 @@ function stopTimer() {
   $('timerStart').style.display = '';
   $('timerStart').textContent = 'start';
   $('timerPause').style.display = 'none';
-  // Record session duration
   if (timerSeconds > 0 && currentId) {
     const entry = entries.find(e => e.id === currentId);
     if (entry) { entry.timerUsed = true; entry.timerDuration = timerSeconds; save(); }
@@ -744,15 +1331,14 @@ $('exportHtml').addEventListener('click', () => {
 <html><head><meta charset="UTF-8"><title>Journal Entry - ${dateStr}</title>
 <style>
 body{font-family:'JetBrains Mono',monospace;max-width:700px;margin:40px auto;padding:20px;line-height:1.8;color:#1a1a1a;font-size:14px}
-mark[data-color="gold"]{background:rgba(201,169,110,.2);color:#8a7040}
-mark[data-color="teal"]{background:rgba(90,158,143,.2);color:#3a7a6a}
-mark[data-color="red"]{background:rgba(192,96,96,.2);color:#804040}
-mark[data-color="blue"]{background:rgba(106,159,216,.2);color:#4070a0}
-mark[data-color="purple"]{background:rgba(176,122,204,.2);color:#705090}
-mark[data-color="yellow"]{background:rgba(212,196,90,.2);color:#807030}
-.meta{font-size:12px;color:#999;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid #eee}
+table{border-collapse:collapse;width:100%;margin:12px 0}
+table td,table th{border:1px solid #ddd;padding:8px}
+table th{background:#f5f5f5;font-weight:600}
+svg{border:1px solid #ddd;border-radius:4px;margin:12px 0}
 </style></head><body>
-<div class="meta">${d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' })}${entry.timerUsed ? ' · session: ' + Math.floor(entry.timerDuration/60) + 'm' : ''}</div>
+<div style="font-size:12px;color:#999;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid #eee">
+${d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' })}${entry.timerUsed ? ' · session: ' + Math.floor(entry.timerDuration/60) + 'm' : ''}
+</div>
 ${entry.html}
 </body></html>`;
   const blob = new Blob([content], { type: 'text/html' });
@@ -771,7 +1357,6 @@ $('exportMd').addEventListener('click', () => {
   const dateStr = d.toISOString().split('T')[0];
   const dateFull = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
 
-  // Convert HTML to markdown
   function htmlToMd(html) {
     const tmp = document.createElement('div');
     tmp.innerHTML = html;
@@ -780,7 +1365,6 @@ $('exportMd').addEventListener('click', () => {
       let md = '';
       node.childNodes.forEach(child => {
         if (child.nodeType === 3) {
-          // Text node
           md += child.textContent;
         } else if (child.nodeType === 1) {
           const tag = child.tagName.toLowerCase();
@@ -793,10 +1377,8 @@ $('exportMd').addEventListener('click', () => {
             const color = child.dataset.color || '';
             const inner = walk(child);
             md += '==' + inner + '==' + (color !== 'gold' ? '{' + color + '}' : '');
-          } else if (tag === 'strong' || tag === 'b') {
-            md += '**' + walk(child) + '**';
-          } else if (tag === 'em' || tag === 'i') {
-            md += '*' + walk(child) + '*';
+          } else if (tag === 'table' || tag === 'svg') {
+            md += '\n[visualization]\n';
           } else {
             md += walk(child);
           }
@@ -828,6 +1410,7 @@ $('exportMd').addEventListener('click', () => {
   URL.revokeObjectURL(a.href);
   $('exportOverlay').classList.remove('visible');
 });
+
 document.addEventListener('keydown', (e) => {
   if ((e.metaKey || e.ctrlKey) && e.key === 's') {
     e.preventDefault();
