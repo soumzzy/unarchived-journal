@@ -141,52 +141,27 @@ body{
 .timer-pulse.stopped{display:none}
 @keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
 
-/* ─── TOOLS BAR ─── */
-.tools-bar{
-  position:fixed;top:80px;right:0;left:240px;
-  background:var(--bg3);
-  border-bottom:1px solid var(--brd);
-  padding:12px 24px;
-  z-index:80;
-  transition:left .3s,opacity .3s,max-height .3s;
-  max-height:300px;
-  overflow-y:auto;
-  opacity:1;
+/* ─── CALCULATOR (Floating) ─── */
+.calc-overlay{
+  position:fixed;bottom:20px;right:20px;
+  background:var(--bg2);border:1px solid var(--brd);
+  border-radius:var(--radius);padding:12px;
+  z-index:150;
+  width:180px;
+  display:none;
+  flex-direction:column;
+  gap:8px;
 }
-.tools-bar.collapsed{max-height:0;opacity:0;overflow:hidden;padding:0;border:none}
-.sidebar.hidden ~ .tools-bar{left:0}
-.timer-bar.collapsed ~ .tools-bar{top:44px}
-
-.tools-tabs{
-  display:flex;gap:8px;margin-bottom:12px;
-  border-bottom:1px solid var(--brd);
-  padding-bottom:8px;
-}
-.tool-tab{
-  background:transparent;border:none;
-  color:var(--tx2);font-family:var(--mono);font-size:.75rem;
-  padding:4px 12px;cursor:pointer;
-  transition:all .2s;
-  border-bottom:2px solid transparent;
-}
-.tool-tab:hover{color:var(--gd)}
-.tool-tab.active{color:var(--gd);border-bottom-color:var(--gd)}
-
-.tool-content{display:none}
-.tool-content.active{display:block}
-
-/* Calculator */
+.calc-overlay.visible{display:flex}
 #calcDisplay{
   background:transparent;border:1px solid var(--brd);
   color:var(--gd);font-family:var(--mono);font-size:.9rem;
   padding:8px;border-radius:var(--radius);
   text-align:right;width:100%;
   box-sizing:border-box;
-  margin-bottom:8px;
 }
 .calc-buttons{
   display:grid;grid-template-columns:repeat(4,1fr);gap:4px;
-  margin-bottom:8px;
 }
 .calc-btn{
   background:transparent;border:1px solid var(--brd);
@@ -199,17 +174,27 @@ body{
 #calcInsert{
   background:var(--gd-dim);border:1px solid rgba(201,169,110,.3);
   color:var(--gd);font-family:var(--mono);font-size:.65rem;
-  padding:6px;border-radius:var(--radius);cursor:pointer;
+  padding:4px;border-radius:var(--radius);cursor:pointer;
   transition:all .2s;width:100%;
 }
 #calcInsert:hover{background:rgba(201,169,110,.25)}
 
-/* Graphs/Tables */
-.graph-form{
-  display:flex;flex-direction:column;gap:8px;
+/* ─── GRAPH/TEMPLATE MODALS ─── */
+.graph-modal,.tpl-modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  display:none;align-items:center;justify-content:center;z-index:200;
+  padding:20px;
 }
+.graph-modal.visible,.tpl-modal.visible{display:flex}
+.modal-box{
+  background:var(--bg2);border:1px solid var(--brd);
+  border-radius:10px;padding:24px;max-width:400px;width:100%;
+  max-height:80vh;overflow-y:auto;
+}
+.modal-box h2{font-family:var(--serif);font-size:1.2rem;color:var(--tx);margin-bottom:16px;font-weight:400}
+
 .form-group{
-  display:flex;flex-direction:column;gap:4px;
+  display:flex;flex-direction:column;gap:4px;margin-bottom:12px;
 }
 .form-group label{
   font-size:.7rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;
@@ -220,24 +205,24 @@ body{
   padding:6px;border-radius:var(--radius);
 }
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--gd)}
-.graph-actions{display:flex;gap:4px}
-.graph-btn{
-  flex:1;padding:6px;border-radius:var(--radius);
-  font-family:var(--mono);font-size:.7rem;cursor:pointer;
+
+.modal-actions{display:flex;gap:8px}
+.modal-btn{
+  flex:1;padding:8px;border-radius:var(--radius);
+  font-family:var(--mono);font-size:.75rem;cursor:pointer;
   border:1px solid var(--brd);background:transparent;color:var(--tx2);
   transition:all .2s;
 }
-.graph-btn:hover{border-color:var(--gd);color:var(--gd)}
-.graph-btn.primary{background:var(--gd-dim);border-color:rgba(201,169,110,.3);color:var(--gd)}
+.modal-btn:hover{border-color:var(--gd);color:var(--gd)}
+.modal-btn.primary{background:var(--gd-dim);border-color:rgba(201,169,110,.3);color:var(--gd)}
 
-/* Templates */
-.templates-list{
-  display:grid;grid-template-columns:1fr 1fr;gap:6px;
+.templates-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
 }
 .template-item{
   background:transparent;border:1px solid var(--brd);
   color:var(--tx2);font-family:var(--mono);font-size:.7rem;
-  padding:6px 8px;border-radius:var(--radius);cursor:pointer;
+  padding:8px;border-radius:var(--radius);cursor:pointer;
   text-align:center;transition:all .2s;
 }
 .template-item:hover{border-color:var(--gd);color:var(--gd);background:var(--gd-dim)}
@@ -425,7 +410,6 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
   .sidebar{width:100%;height:auto;top:44px;max-height:50vh;border-right:none;border-bottom:1px solid var(--brd)}
   .sidebar.hidden{transform:translateX(-100vw)}
   .timer-bar{left:0;right:0}
-  .tools-bar{left:0;right:0;top:80px}
   .editor-wrap{margin-left:0;margin-top:44px;padding:24px 20px 100px}
   .chrome-right{gap:4px}
   .btn{padding:5px 8px;font-size:.65rem}
@@ -435,7 +419,8 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
   .highlight-bar{bottom:10px;padding:4px 8px;gap:4px}
   .hl-btn{width:18px;height:18px;font-size:.5rem}
   .hl-mode{width:22px;height:18px;font-size:.6rem}
-  .templates-list{grid-template-columns:1fr}
+  .calc-overlay{width:160px;bottom:10px;right:10px}
+  .templates-grid{grid-template-columns:1fr}
 }
 
 @media(max-width:500px){
@@ -461,8 +446,9 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
   .tour-box{padding:24px}
   .tour-box h2{font-size:1.2rem;margin-bottom:16px}
   .tour-step p{font-size:.8rem;margin-bottom:12px}
-  .calc-buttons{grid-template-columns:repeat(3,1fr)}
-  .tool-tab{padding:4px 8px;font-size:.65rem}
+  .calc-overlay{width:140px;padding:10px;bottom:8px;right:8px}
+  .modal-box{max-width:90vw;padding:16px}
+  .templates-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -476,7 +462,9 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
   </div>
   <div class="chrome-right">
     <button class="btn" id="toggleTimer">⏱</button>
-    <button class="btn" id="toggleTools">tools</button>
+    <button class="btn" id="calcBtn">calc</button>
+    <button class="btn" id="graphBtn">graph</button>
+    <button class="btn" id="tplBtn">tpl</button>
     <button class="btn" id="toggleTheme">◐</button>
     <button class="btn" id="exportBtn">export</button>
     <button class="btn" id="tourBtn" title="Help">?</button>
@@ -508,77 +496,73 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
   </div>
 </div>
 
-<!-- TOOLS BAR -->
-<div class="tools-bar collapsed" id="toolsBar">
-  <div class="tools-tabs">
-    <button class="tool-tab active" data-tool="calc">calc</button>
-    <button class="tool-tab" data-tool="graph">graph</button>
-    <button class="tool-tab" data-tool="templates">templates</button>
+<!-- CALCULATOR (Floating) -->
+<div class="calc-overlay" id="calcOverlay">
+  <input type="text" id="calcDisplay" readonly value="0">
+  <div class="calc-buttons">
+    <button class="calc-btn" data-calc="7">7</button>
+    <button class="calc-btn" data-calc="8">8</button>
+    <button class="calc-btn" data-calc="9">9</button>
+    <button class="calc-btn op" data-calc="/">/</button>
+    <button class="calc-btn" data-calc="4">4</button>
+    <button class="calc-btn" data-calc="5">5</button>
+    <button class="calc-btn" data-calc="6">6</button>
+    <button class="calc-btn op" data-calc="*">*</button>
+    <button class="calc-btn" data-calc="1">1</button>
+    <button class="calc-btn" data-calc="2">2</button>
+    <button class="calc-btn" data-calc="3">3</button>
+    <button class="calc-btn op" data-calc="-">-</button>
+    <button class="calc-btn" data-calc="0">0</button>
+    <button class="calc-btn op" data-calc="+">+</button>
+    <button class="calc-btn op" data-calc="=">=</button>
   </div>
+  <button id="calcInsert">insert</button>
+</div>
 
-  <!-- Calculator -->
-  <div class="tool-content active" id="calcContent">
-    <input type="text" id="calcDisplay" readonly value="0">
-    <div class="calc-buttons">
-      <button class="calc-btn" data-calc="7">7</button>
-      <button class="calc-btn" data-calc="8">8</button>
-      <button class="calc-btn" data-calc="9">9</button>
-      <button class="calc-btn op" data-calc="/">/</button>
-      <button class="calc-btn" data-calc="4">4</button>
-      <button class="calc-btn" data-calc="5">5</button>
-      <button class="calc-btn" data-calc="6">6</button>
-      <button class="calc-btn op" data-calc="*">*</button>
-      <button class="calc-btn" data-calc="1">1</button>
-      <button class="calc-btn" data-calc="2">2</button>
-      <button class="calc-btn" data-calc="3">3</button>
-      <button class="calc-btn op" data-calc="-">-</button>
-      <button class="calc-btn" data-calc="0">0</button>
-      <button class="calc-btn op" data-calc="+">+</button>
-      <button class="calc-btn op" data-calc="=">=</button>
+<!-- GRAPH MODAL -->
+<div class="graph-modal" id="graphModal">
+  <div class="modal-box">
+    <h2>Graph / Table</h2>
+    <div class="form-group">
+      <label>Type</label>
+      <select id="graphType">
+        <option value="line">Line graph</option>
+        <option value="bar">Bar chart</option>
+        <option value="table">Table</option>
+      </select>
     </div>
-    <button id="calcInsert">insert result</button>
-  </div>
-
-  <!-- Graphs/Tables -->
-  <div class="tool-content" id="graphContent">
-    <div class="graph-form">
-      <div class="form-group">
-        <label>Type</label>
-        <select id="graphType">
-          <option value="line">Line graph</option>
-          <option value="bar">Bar chart</option>
-          <option value="table">Table</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Title</label>
-        <input type="text" id="graphTitle" placeholder="e.g., Daily Words">
-      </div>
-      <div class="form-group" id="csvGroup">
-        <label>Data (CSV)</label>
-        <textarea id="graphData" placeholder="x,y&#10;jan,10&#10;feb,20" rows="3"></textarea>
-      </div>
-      <div class="form-group" id="tableDataGroup" style="display:none">
-        <label>Data (pipe-separated)</label>
-        <textarea id="tableData" placeholder="Name,Age&#10;John,30&#10;Jane,25" rows="3"></textarea>
-      </div>
-      <div class="graph-actions">
-        <button class="graph-btn primary" id="insertGraph">insert</button>
-      </div>
+    <div class="form-group">
+      <label>Title</label>
+      <input type="text" id="graphTitle" placeholder="e.g., Daily Words">
+    </div>
+    <div class="form-group" id="csvGroup">
+      <label>Data (CSV)</label>
+      <textarea id="graphData" placeholder="x,y&#10;jan,10&#10;feb,20" rows="3"></textarea>
+    </div>
+    <div class="form-group" id="tableDataGroup" style="display:none">
+      <label>Data</label>
+      <textarea id="tableData" placeholder="Name,Age&#10;John,30&#10;Jane,25" rows="3"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn primary" id="insertGraph">insert</button>
+      <button class="modal-btn" id="closeGraphModal">cancel</button>
     </div>
   </div>
+</div>
 
-  <!-- Templates -->
-  <div class="tool-content" id="templatesContent">
-    <div class="templates-list">
-      <button class="template-item" data-template="js-comment">// JS</button>
-      <button class="template-item" data-template="py-comment"># Python</button>
-      <button class="template-item" data-template="h1"># H1</button>
-      <button class="template-item" data-template="h2">## H2</button>
-      <button class="template-item" data-template="list">- List</button>
-      <button class="template-item" data-template="code">```code```</button>
-      <button class="template-item" data-template="csv">CSV</button>
-      <button class="template-item" data-template="json">JSON</button>
+<!-- TEMPLATES MODAL -->
+<div class="tpl-modal" id="tplModal">
+  <div class="modal-box">
+    <h2>Templates</h2>
+    <div class="templates-grid">
+      <button class="template-item" data-template="system">System</button>
+      <button class="template-item" data-template="context">Context</button>
+      <button class="template-item" data-template="instruction">Instructions</button>
+      <button class="template-item" data-template="example">Example</button>
+      <button class="template-item" data-template="query">Query</button>
+      <button class="template-item" data-template="reference">Reference</button>
+      <button class="template-item" data-template="h1"># Heading</button>
+      <button class="template-item" data-template="link">[link]</button>
     </div>
   </div>
 </div>
@@ -690,16 +674,18 @@ let calcMemory = 0;
 let calcOp = null;
 let calcNew = true;
 
-// Templates
+// Templates (Prompt-focused)
 const templates = {
-  'js-comment': `/**\n * [description]\n */`,
-  'py-comment': `# [comment]`,
+  'system': `## System\nYou are a [role/expert]. Your goal is to [objective]. Follow these principles:\n- [principle 1]\n- [principle 2]\n- [principle 3]`,
+  'context': `## Context\n[Describe the background, domain, or situation the user is working within]`,
+  'instruction': `## Instructions\n1. [Step 1]\n2. [Step 2]\n3. [Step 3]\nOutput format: [describe expected output]`,
+  'example': `## Example\nInput: [example input]\nOutput: [example output]`,
+  'query': `## Query\n[Your question or request here]`,
+  'reference': `## Reference\n- [Link or file path]\n- [Link or file path]`,
   'h1': `# `,
   'h2': `## `,
   'list': `- `,
-  'code': `\`\`\`\n[code]\n\`\`\``,
-  'csv': `label1,label2,label3\nvalue1,value2,value3`,
-  'json': `{\n  "key": "value"\n}`,
+  'link': `[text](https://url)`,
 };
 
 const $ = id => document.getElementById(id);
@@ -736,7 +722,7 @@ function updateTourDisplay() {
     '#editor',
     '#highlightBar',
     '#toggleTimer',
-    '#toggleTools',
+    '#calcBtn',
     '#sidebar',
     '#exportBtn',
     '#toggleTheme'
@@ -1061,24 +1047,24 @@ $('calcInsert').addEventListener('click', () => {
   autoSave();
 });
 
-// ─── TOOLS BAR ───
-$('toggleTools').addEventListener('click', () => {
-  const bar = $('toolsBar');
-  bar.classList.toggle('collapsed');
-  $('toggleTools').classList.toggle('active', !bar.classList.contains('collapsed'));
+// ─── CALCULATOR ───
+$('calcBtn').addEventListener('click', () => {
+  $('calcOverlay').classList.toggle('visible');
 });
 
-document.querySelectorAll('.tool-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    const tool = tab.dataset.tool;
-    document.querySelectorAll('.tool-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tool-content').forEach(c => c.classList.remove('active'));
-    tab.classList.add('active');
-    $( tool + 'Content').classList.add('active');
-  });
+// ─── GRAPH MODAL ───
+$('graphBtn').addEventListener('click', () => {
+  $('graphModal').classList.add('visible');
 });
 
-// ─── GRAPHS ───
+$('closeGraphModal').addEventListener('click', () => {
+  $('graphModal').classList.remove('visible');
+});
+
+$('graphModal').addEventListener('click', (e) => {
+  if (e.target === $('graphModal')) $('graphModal').classList.remove('visible');
+});
+
 $('graphType').addEventListener('change', (e) => {
   const isTable = e.target.value === 'table';
   $('csvGroup').style.display = isTable ? 'none' : '';
@@ -1184,7 +1170,15 @@ $('insertGraph').addEventListener('click', () => {
   $('tableData').value = '';
 });
 
-// ─── TEMPLATES ───
+// ─── TEMPLATES MODAL ───
+$('tplBtn').addEventListener('click', () => {
+  $('tplModal').classList.add('visible');
+});
+
+$('tplModal').addEventListener('click', (e) => {
+  if (e.target === $('tplModal')) $('tplModal').classList.remove('visible');
+});
+
 document.querySelectorAll('.template-item').forEach(btn => {
   btn.addEventListener('click', () => {
     const templateId = btn.dataset.template;
@@ -1200,6 +1194,7 @@ document.querySelectorAll('.template-item').forEach(btn => {
       editor.textContent += templateText;
     }
     autoSave();
+    $('tplModal').classList.remove('visible');
   });
 });
 
@@ -1352,7 +1347,9 @@ $('exportMd').addEventListener('click', () => {
   const entry = entries.find(e => e.id === currentId);
   if (!entry) return;
   const d = new Date(entry.created);
+  const dUpdated = new Date(entry.updated);
   const dateStr = d.toISOString().split('T')[0];
+  const timeStr = d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
   const dateFull = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
 
   function htmlToMd(html) {
@@ -1391,19 +1388,20 @@ $('exportMd').addEventListener('click', () => {
   const mdBody = htmlToMd(entry.html);
   const meta = [
     '---',
-    `date: ${dateStr}`,
+    `id: ${entry.id}`,
     `created: ${d.toISOString()}`,
+    `updated: ${dUpdated.toISOString()}`,
   ];
   if (entry.timerUsed && entry.timerDuration > 0) {
-    meta.push(`session: ${Math.floor(entry.timerDuration / 60)}m ${entry.timerDuration % 60}s`);
+    meta.push(`session_duration: ${Math.floor(entry.timerDuration / 60)}m ${entry.timerDuration % 60}s`);
   }
   meta.push('---', '');
 
-  const content = meta.join('\n') + '# ' + dateFull + '\n\n' + mdBody + '\n';
+  const content = meta.join('\n') + '# ' + dateFull + ' · ' + timeStr + '\n\n' + mdBody + '\n';
   const blob = new Blob([content], { type: 'text/markdown' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `journal-${dateStr}.md`;
+  a.download = `prompt-${dateStr}-${entry.id.substring(2, 8)}.md`;
   a.click();
   URL.revokeObjectURL(a.href);
   $('exportOverlay').classList.remove('visible');
