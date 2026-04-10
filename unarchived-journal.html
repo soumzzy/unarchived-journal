@@ -160,51 +160,13 @@ body{
 .timer-pulse.stopped{display:none}
 @keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
 
-/* ─── CALCULATOR (Floating) ─── */
-.calc-overlay{
-  position:fixed;bottom:20px;right:20px;
-  background:var(--bg2);border:1px solid var(--brd);
-  border-radius:var(--radius);padding:12px;
-  z-index:150;
-  width:180px;
-  display:none;
-  flex-direction:column;
-  gap:8px;
-}
-.calc-overlay.visible{display:flex}
-#calcDisplay{
-  background:transparent;border:1px solid var(--brd);
-  color:var(--gd);font-family:var(--mono);font-size:.9rem;
-  padding:8px;border-radius:var(--radius);
-  text-align:right;width:100%;
-  box-sizing:border-box;
-}
-.calc-buttons{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:4px;
-}
-.calc-btn{
-  background:transparent;border:1px solid var(--brd);
-  color:var(--tx2);font-family:var(--mono);font-size:.7rem;
-  padding:6px 2px;border-radius:3px;cursor:pointer;
-  transition:all .2s;
-}
-.calc-btn:hover{border-color:var(--gd);color:var(--gd)}
-.calc-btn.op{background:var(--gd-dim);border-color:rgba(201,169,110,.3);color:var(--gd)}
-#calcInsert{
-  background:var(--gd-dim);border:1px solid rgba(201,169,110,.3);
-  color:var(--gd);font-family:var(--mono);font-size:.65rem;
-  padding:4px;border-radius:var(--radius);cursor:pointer;
-  transition:all .2s;width:100%;
-}
-#calcInsert:hover{background:rgba(201,169,110,.25)}
-
-/* ─── GRAPH/TEMPLATE MODALS ─── */
-.graph-modal,.tpl-modal{
+/* ─── TEMPLATE MODAL ─── */
+.tpl-modal{
   position:fixed;inset:0;background:rgba(0,0,0,.6);
   display:none;align-items:center;justify-content:center;z-index:200;
   padding:20px;
 }
-.graph-modal.visible,.tpl-modal.visible{display:flex}
+.tpl-modal.visible{display:flex}
 .modal-box{
   background:var(--bg2);border:1px solid var(--brd);
   border-radius:10px;padding:24px;max-width:400px;width:100%;
@@ -438,7 +400,6 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
   .highlight-bar{bottom:10px;padding:4px 8px;gap:4px}
   .hl-btn{width:18px;height:18px;font-size:.5rem}
   .hl-mode{width:22px;height:18px;font-size:.6rem}
-  .calc-overlay{width:160px;bottom:10px;right:10px}
   .templates-grid{grid-template-columns:1fr}
   .tools-menu{min-width:70px}
   .tools-item{padding:4px 10px;font-size:.65rem}
@@ -467,7 +428,6 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
   .tour-box{padding:24px}
   .tour-box h2{font-size:1.2rem;margin-bottom:16px}
   .tour-step p{font-size:.8rem;margin-bottom:12px}
-  .calc-overlay{width:140px;padding:10px;bottom:8px;right:8px}
   .modal-box{max-width:90vw;padding:16px}
   .templates-grid{grid-template-columns:1fr}
 }
@@ -486,9 +446,7 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
     <div class="tools-dropdown" id="toolsDropdown">
       <button class="btn" id="toolsBtn">tools</button>
       <div class="tools-menu" id="toolsMenu">
-        <button class="tools-item" id="calcBtn">calc</button>
-        <button class="tools-item" id="graphBtn">graph</button>
-        <button class="tools-item" id="tplBtn">tpl</button>
+        <button class="tools-item" id="tplBtn">prompts</button>
       </div>
     </div>
     <button class="btn" id="toggleTheme">◐</button>
@@ -522,59 +480,6 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
   </div>
 </div>
 
-<!-- CALCULATOR (Floating) -->
-<div class="calc-overlay" id="calcOverlay">
-  <input type="text" id="calcDisplay" readonly value="0">
-  <div class="calc-buttons">
-    <button class="calc-btn" data-calc="7">7</button>
-    <button class="calc-btn" data-calc="8">8</button>
-    <button class="calc-btn" data-calc="9">9</button>
-    <button class="calc-btn op" data-calc="/">/</button>
-    <button class="calc-btn" data-calc="4">4</button>
-    <button class="calc-btn" data-calc="5">5</button>
-    <button class="calc-btn" data-calc="6">6</button>
-    <button class="calc-btn op" data-calc="*">*</button>
-    <button class="calc-btn" data-calc="1">1</button>
-    <button class="calc-btn" data-calc="2">2</button>
-    <button class="calc-btn" data-calc="3">3</button>
-    <button class="calc-btn op" data-calc="-">-</button>
-    <button class="calc-btn" data-calc="0">0</button>
-    <button class="calc-btn op" data-calc="+">+</button>
-    <button class="calc-btn op" data-calc="=">=</button>
-  </div>
-  <button id="calcInsert">insert</button>
-</div>
-
-<!-- GRAPH MODAL -->
-<div class="graph-modal" id="graphModal">
-  <div class="modal-box">
-    <h2>Graph / Table</h2>
-    <div class="form-group">
-      <label>Type</label>
-      <select id="graphType">
-        <option value="line">Line graph</option>
-        <option value="bar">Bar chart</option>
-        <option value="table">Table</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Title</label>
-      <input type="text" id="graphTitle" placeholder="e.g., Daily Words">
-    </div>
-    <div class="form-group" id="csvGroup">
-      <label>Data (CSV)</label>
-      <textarea id="graphData" placeholder="x,y&#10;jan,10&#10;feb,20" rows="3"></textarea>
-    </div>
-    <div class="form-group" id="tableDataGroup" style="display:none">
-      <label>Data</label>
-      <textarea id="tableData" placeholder="Name,Age&#10;John,30&#10;Jane,25" rows="3"></textarea>
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn primary" id="insertGraph">insert</button>
-      <button class="modal-btn" id="closeGraphModal">cancel</button>
-    </div>
-  </div>
-</div>
 
 <!-- TEMPLATES MODAL -->
 <div class="tpl-modal" id="tplModal">
@@ -659,7 +564,7 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
     </div>
     <div class="tour-step">
       <div class="step-num">Tools</div>
-      <p>Click "tools" to expand. Calculator, graphs/tables, and templates in one panel. Click tabs to switch between them.</p>
+      <p>Click "tools" to access prompt templates. System, Context, Instructions, Example, Query, Reference—structured sections to draft detailed prompts.</p>
     </div>
     <div class="tour-step">
       <div class="step-num">Entries</div>
@@ -695,11 +600,6 @@ let tourStep = 0;
 const totalTourSteps = 8;
 
 // Calculator state
-let calcDisplay = '0';
-let calcMemory = 0;
-let calcOp = null;
-let calcNew = true;
-
 // Templates (Prompt-focused)
 const templates = {
   'system': `## System\nYou are a [role/expert]. Your goal is to [objective]. Follow these principles:\n- [principle 1]\n- [principle 2]\n- [principle 3]`,
@@ -748,7 +648,7 @@ function updateTourDisplay() {
     '#editor',
     '#highlightBar',
     '#toggleTimer',
-    '#calcBtn',
+    '#toolsBtn',
     '#sidebar',
     '#exportBtn',
     '#toggleTheme'
@@ -1025,54 +925,6 @@ document.querySelectorAll('.hl-btn').forEach(btn => {
   });
 });
 
-// ─── CALCULATOR ───
-function updateCalcDisplay() {
-  $('calcDisplay').value = calcDisplay;
-}
-
-document.querySelectorAll('.calc-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const val = btn.dataset.calc;
-    if (val === '=') {
-      try {
-        if (calcOp && calcNew) return;
-        const result = eval(calcDisplay);
-        calcDisplay = String(result);
-        calcOp = null;
-        calcNew = true;
-      } catch(e) {
-        calcDisplay = 'error';
-      }
-    } else if (['+', '-', '*', '/'].includes(val)) {
-      if (!calcNew) calcDisplay += val;
-      calcOp = val;
-      calcNew = true;
-    } else {
-      if (calcNew || calcDisplay === '0') {
-        calcDisplay = val;
-        calcNew = false;
-      } else {
-        calcDisplay += val;
-      }
-    }
-    updateCalcDisplay();
-  });
-});
-
-$('calcInsert').addEventListener('click', () => {
-  const sel = window.getSelection();
-  if (sel.rangeCount > 0) {
-    const range = sel.getRangeAt(0);
-    range.insertNode(document.createTextNode(calcDisplay));
-    range.collapse(false);
-    sel.removeAllRanges();
-    sel.addRange(range);
-  } else {
-    editor.textContent += calcDisplay;
-  }
-  autoSave();
-});
-
 // ─── TOOLS DROPDOWN ───
 $('toolsBtn').addEventListener('click', (e) => {
   e.stopPropagation();
@@ -1081,131 +933,6 @@ $('toolsBtn').addEventListener('click', (e) => {
 
 document.addEventListener('click', () => {
   $('toolsMenu').classList.remove('visible');
-});
-
-// ─── CALCULATOR ───
-$('calcBtn').addEventListener('click', () => {
-  $('calcOverlay').classList.toggle('visible');
-  $('toolsMenu').classList.remove('visible');
-});
-
-// ─── GRAPH MODAL ───
-$('graphBtn').addEventListener('click', () => {
-  $('graphModal').classList.add('visible');
-  $('toolsMenu').classList.remove('visible');
-});
-
-$('closeGraphModal').addEventListener('click', () => {
-  $('graphModal').classList.remove('visible');
-});
-
-$('graphModal').addEventListener('click', (e) => {
-  if (e.target === $('graphModal')) $('graphModal').classList.remove('visible');
-});
-
-$('graphType').addEventListener('change', (e) => {
-  const isTable = e.target.value === 'table';
-  $('csvGroup').style.display = isTable ? 'none' : '';
-  $('tableDataGroup').style.display = isTable ? '' : 'none';
-});
-
-function createSVGGraph(type, title, data) {
-  const width = 280, height = 150;
-  const padding = 25;
-  const graphWidth = width - padding * 2;
-  const graphHeight = height - padding * 2;
-
-  const lines = data.trim().split('\n').filter(l => l.length > 0);
-  const points = lines.map(line => {
-    const [x, y] = line.split(',');
-    return { x: x.trim(), y: parseFloat(y) || 0 };
-  });
-
-  if (points.length < 2) return '<p style="color:var(--tx3);font-size:.75rem">Need at least 2 points</p>';
-
-  const maxY = Math.max(...points.map(p => p.y)) || 1;
-  const minY = 0;
-  const yRange = maxY - minY;
-
-  let svg = `<svg width="${width}" height="${height}" style="border:1px solid var(--brd);border-radius:4px;margin:8px 0">
-    <rect width="${width}" height="${height}" fill="var(--bg)" />`;
-
-  if (type === 'line') {
-    let pathD = '';
-    points.forEach((p, i) => {
-      const x = padding + (i / (points.length - 1)) * graphWidth;
-      const y = padding + graphHeight - ((p.y - minY) / yRange) * graphHeight;
-      pathD += (i === 0 ? 'M' : 'L') + x + ',' + y;
-    });
-    svg += `<path d="${pathD}" stroke="var(--gd)" stroke-width="2" fill="none" />`;
-  } else if (type === 'bar') {
-    const barWidth = graphWidth / points.length * 0.6;
-    points.forEach((p, i) => {
-      const x = padding + (i / points.length) * graphWidth + (graphWidth / points.length - barWidth) / 2;
-      const barHeight = ((p.y - minY) / yRange) * graphHeight;
-      const y = padding + graphHeight - barHeight;
-      svg += `<rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" fill="var(--gd-dim)" stroke="var(--gd)" stroke-width="1" />`;
-    });
-  }
-
-  svg += `<line x1="${padding}" y1="${padding + graphHeight}" x2="${width - padding}" y2="${padding + graphHeight}" stroke="var(--brd)" stroke-width="1" />`;
-  svg += `<line x1="${padding}" y1="${padding}" x2="${padding}" y2="${padding + graphHeight}" stroke="var(--brd)" stroke-width="1" />`;
-  svg += `<text x="${width / 2}" y="${height - 5}" text-anchor="middle" fill="var(--tx3)" font-size="11">${title}</text>`;
-  svg += '</svg>';
-
-  return svg;
-}
-
-function createHTMLTable(data) {
-  const lines = data.trim().split('\n').filter(l => l.length > 0);
-  if (lines.length === 0) return '<p style="color:var(--tx3);font-size:.75rem">No data</p>';
-
-  const headers = lines[0].split(',');
-  let html = '<table style="border-collapse:collapse;margin:8px 0;width:100%;font-size:.8rem"><tr>';
-  headers.forEach(h => {
-    html += '<th style="border:1px solid var(--brd);padding:6px;background:var(--gd-dim);color:var(--gd)">' + h.trim() + '</th>';
-  });
-  html += '</tr>';
-
-  for (let i = 1; i < lines.length; i++) {
-    const cells = lines[i].split(',');
-    html += '<tr>';
-    cells.forEach(c => {
-      html += '<td style="border:1px solid var(--brd);padding:6px">' + c.trim() + '</td>';
-    });
-    html += '</tr>';
-  }
-  html += '</table>';
-  return html;
-}
-
-$('insertGraph').addEventListener('click', () => {
-  const type = $('graphType').value;
-  const title = $('graphTitle').value || 'Data';
-  const data = type === 'table' ? $('tableData').value : $('graphData').value;
-
-  let html;
-  if (type === 'table') {
-    html = createHTMLTable(data);
-  } else {
-    html = createSVGGraph(type, title, data);
-  }
-
-  const sel = window.getSelection();
-  if (sel.rangeCount > 0) {
-    const range = sel.getRangeAt(0);
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    range.insertNode(div);
-    range.collapse(false);
-    sel.removeAllRanges();
-    sel.addRange(range);
-  }
-
-  autoSave();
-  $('graphTitle').value = '';
-  $('graphData').value = '';
-  $('tableData').value = '';
 });
 
 // ─── TEMPLATES MODAL ───
