@@ -148,7 +148,7 @@ body{
 
 /* ─── SIDEBAR ─── */
 .sidebar{
-  position:fixed;left:0;top:44px;bottom:0;
+  position:fixed;left:0;top:calc(44px + env(safe-area-inset-top,0px));bottom:0;
   width:240px;background:var(--bg2);
   border-right:1px solid var(--brd);
   overflow-y:auto;z-index:90;
@@ -186,7 +186,7 @@ body{
 
 /* ─── TIMER ─── */
 .timer-bar{
-  position:fixed;top:44px;right:0;left:240px;
+  position:fixed;top:calc(44px + env(safe-area-inset-top,0px));right:0;left:240px;
   height:36px;background:var(--bg3);
   border-bottom:1px solid var(--brd);
   display:flex;align-items:center;justify-content:space-between;
@@ -447,10 +447,10 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
 
 /* ─── RESPONSIVE ─── */
 @media(max-width:768px){
-  .sidebar{width:100%;height:auto;top:44px;max-height:50vh;border-right:none;border-bottom:1px solid var(--brd)}
+  .sidebar{width:100%;height:auto;top:calc(44px + env(safe-area-inset-top,0px));max-height:50vh;border-right:none;border-bottom:1px solid var(--brd)}
   .sidebar.hidden{transform:translateX(-100vw)}
   .timer-bar{left:0;right:0}
-  .editor-wrap{margin-left:0;margin-top:44px;padding:24px 20px 100px}
+  .editor-wrap{margin-left:0;margin-top:calc(44px + env(safe-area-inset-top,0px));padding:24px 20px calc(100px + env(safe-area-inset-bottom,0px))}
   .chrome-right{gap:4px}
   .btn{padding:5px 8px;font-size:.65rem}
   .editor{font-size:.85rem}
@@ -465,13 +465,13 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
 }
 
 @media(max-width:500px){
-  .chrome{padding:0 12px}
+  .chrome{padding-top:env(safe-area-inset-top,0px);padding-bottom:0;padding-left:12px;padding-right:12px}
   .chrome-title{font-size:.95rem}
   .chrome-right{gap:4px}
   .btn{padding:4px 6px;font-size:.6rem}
   .sidebar{max-height:40vh}
   .sidebar-header h3{font-size:.6rem}
-  .editor-wrap{margin-top:44px;padding:16px 12px 80px}
+  .editor-wrap{margin-top:calc(44px + env(safe-area-inset-top,0px));padding:16px 12px calc(80px + env(safe-area-inset-bottom,0px))}
   .editor{font-size:1rem}
   .editor-meta{font-size:.65rem;gap:4px}
   .editor-meta-date{font-size:.65rem}
