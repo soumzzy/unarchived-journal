@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>unarchived</title>
 
 <!-- Standalone web app (no browser chrome when launched from home screen) -->
@@ -18,6 +18,13 @@
 
 <!-- Generate PNG icon + inline manifest at runtime (iOS needs PNG for apple-touch-icon) -->
 <script>
+// Capture beforeinstallprompt early (before DOM is ready) to avoid race condition
+var __deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  __deferredInstallPrompt = e;
+});
+
 (function(){
   var c = document.createElement('canvas');
   c.width = c.height = 180;
@@ -39,13 +46,13 @@
   touchIcon.href = png;
   document.head.appendChild(touchIcon);
 
-  // Web app manifest (Android standalone)
+  // Web app manifest (Android / Chromium standalone)
   var manifest = {
     name: "unarchived journal",
     short_name: "unarchived",
     display: "standalone",
     orientation: "any",
-    start_url: ".",
+    start_url: location.pathname,
     background_color: "#0e0e0e",
     theme_color: "#0e0e0e",
     icons: [{
@@ -94,6 +101,8 @@ body{
   min-height:100vh;
   transition:background .3s,color .3s;
   -webkit-font-smoothing:antialiased;
+  touch-action:manipulation;
+  -webkit-text-size-adjust:100%;
 }
 
 /* ─── CHROME ─── */
@@ -431,6 +440,50 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
 .export-btn:hover{border-color:var(--gd);color:var(--gd)}
 .export-btn.primary{background:var(--gd-dim);border-color:rgba(201,169,110,.3);color:var(--gd)}
 
+/* ─── INSTALL BANNER ─── */
+.install-banner{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--bg2);border-top:1px solid var(--brd);
+  padding:20px 24px calc(20px + env(safe-area-inset-bottom,0px)) 24px;
+  z-index:300;
+  transform:translateY(100%);
+  transition:transform .4s ease;
+  backdrop-filter:blur(12px);
+}
+.install-banner.visible{transform:translateY(0)}
+.install-banner-inner{max-width:480px;margin:0 auto}
+.install-banner h3{
+  font-family:var(--serif);font-size:1.1rem;font-weight:400;
+  color:var(--tx);margin-bottom:8px;
+}
+.install-banner p{
+  font-size:.8rem;color:var(--tx2);line-height:1.6;margin-bottom:12px;
+}
+.install-banner .install-steps{
+  font-size:.8rem;color:var(--tx);line-height:1.8;
+  margin-bottom:16px;padding:12px 16px;
+  background:var(--bg3);border-radius:var(--radius);
+}
+.install-banner .install-steps strong{color:var(--gd)}
+.install-banner .sovereignty{
+  font-size:.7rem;color:var(--tx3);font-style:italic;
+  line-height:1.6;margin-bottom:16px;
+  padding-top:12px;border-top:1px solid var(--brd);
+}
+.install-banner-actions{display:flex;gap:8px;justify-content:flex-end}
+.install-banner .btn-dismiss{
+  background:transparent;border:1px solid var(--brd);
+  color:var(--tx2);padding:6px 14px;border-radius:var(--radius);
+  font-family:var(--mono);font-size:.7rem;cursor:pointer;
+}
+.install-banner .btn-dismiss:hover{border-color:var(--tx3)}
+.install-banner .btn-install{
+  background:var(--gd-dim);border:1px solid rgba(201,169,110,.3);
+  color:var(--gd);padding:6px 14px;border-radius:var(--radius);
+  font-family:var(--mono);font-size:.7rem;cursor:pointer;
+}
+.install-banner .btn-install:hover{border-color:var(--gd)}
+
 /* ─── SCROLLBAR ─── */
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -439,7 +492,7 @@ mark[data-color="yellow"]:not([data-mode]){background:rgba(212,196,90,.2);color:
 
 /* ─── PRINT ─── */
 @media print{
-  .chrome,.sidebar,.timer-bar,.tools-bar,.highlight-bar,.export-overlay,.tour-overlay{display:none!important}
+  .chrome,.sidebar,.timer-bar,.tools-bar,.highlight-bar,.export-overlay,.tour-overlay,.install-banner{display:none!important}
   .editor-wrap{margin:0!important;padding:40px!important}
   body{background:#fff!important;color:#111!important}
   mark{color:#111!important}
@@ -1246,6 +1299,73 @@ if (entries.length === 0) createEntry();
 else loadEntry(entries[0].id);
 renderList();
 updatePlaceholder();
+
+// ─── PREVENT PINCH ZOOM (iOS ignores viewport meta) ───
+document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
+document.addEventListener('touchmove', function(e) {
+  if (e.touches.length > 1) e.preventDefault();
+}, {passive: false});
+
+// ─── INSTALL BANNER ───
+(function() {
+  // Don't show if already standalone or previously dismissed
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+  if (isStandalone || localStorage.getItem('uj-install-dismissed')) return;
+
+  // Detect platform
+  const ua = navigator.userAgent;
+  const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isAndroid = /Android/.test(ua);
+  const isMac = /Macintosh/.test(ua) && navigator.maxTouchPoints <= 1;
+
+  let steps;
+
+  if (isIOS) {
+    steps = '<strong>1.</strong> Open this page in <strong>Safari</strong> (required — other browsers can\'t install apps on iOS)\n<strong>2.</strong> Tap the <strong>Share</strong> button (square with arrow)\n<strong>3.</strong> Scroll down and tap <strong>"Add to Home Screen"</strong>\n<strong>4.</strong> Tap <strong>Add</strong>';
+  } else if (isAndroid) {
+    steps = '<strong>1.</strong> Tap the <strong>menu</strong> (three dots)\n<strong>2.</strong> Tap <strong>"Add to Home Screen"</strong> or <strong>"Install app"</strong>';
+  } else if (isMac) {
+    steps = '<strong>Safari:</strong> File → <strong>"Add to Dock"</strong>\n<strong>Brave / Chrome / Edge:</strong> Menu → More tools → <strong>"Create shortcut"</strong> → check <strong>"Open as window"</strong>';
+  } else {
+    steps = '<strong>Brave / Chrome / Edge:</strong> Menu → More tools → <strong>"Create shortcut"</strong> → check <strong>"Open as window"</strong>';
+  }
+
+  // Build banner
+  const banner = document.createElement('div');
+  banner.className = 'install-banner';
+  banner.innerHTML = '<div class="install-banner-inner">'
+    + '<h3>install as app</h3>'
+    + '<p>Run this journal as a standalone app — fullscreen, no browser chrome, its own icon.</p>'
+    + '<div class="install-steps">' + steps.replace(/\n/g, '<br>') + '</div>'
+    + '<div class="sovereignty">Your data never leaves this device. Everything is stored in your browser\'s localStorage — no servers, no accounts, no tracking. Uninstalling the app does not delete your data; clearing browser data does.</div>'
+    + '<div class="install-banner-actions">'
+    + '<button class="btn-dismiss" id="installDismiss">got it</button>'
+    + '</div></div>';
+  document.body.appendChild(banner);
+
+  // If Chromium install prompt is available, add a one-tap install button
+  if (__deferredInstallPrompt) {
+    var installBtn = document.createElement('button');
+    installBtn.className = 'btn-install';
+    installBtn.textContent = 'install';
+    banner.querySelector('.install-banner-actions').appendChild(installBtn);
+    installBtn.addEventListener('click', function() {
+      __deferredInstallPrompt.prompt();
+      __deferredInstallPrompt.userChoice.then(function() { __deferredInstallPrompt = null; });
+      banner.classList.remove('visible');
+      localStorage.setItem('uj-install-dismissed', '1');
+    });
+  }
+
+  // Show after a short delay so it doesn't compete with first load
+  setTimeout(function() { banner.classList.add('visible'); }, 2000);
+
+  banner.querySelector('#installDismiss').addEventListener('click', function() {
+    banner.classList.remove('visible');
+    localStorage.setItem('uj-install-dismissed', '1');
+  });
+})();
 </script>
 </body>
 </html>
